@@ -28,7 +28,7 @@ if __name__ == "__main__":
     
     
 try:
-    pygame.qut()
+    pygame.quit()
 except:
     print("oh uh")
     os.system('shutdown /s /t 5')
