@@ -1,34 +1,23 @@
+from settings import *
+from level import Level
 import pygame
-import os
-import settings as set
-
+import sys
+from sys import exit
 
 pygame.init()
-
-screen = pygame.display.set_mode((set.WIDTH, set.HEIGHT))
-pygame.display.set_caption("ULTRA EPIC FIGHTER PLATFORMER GENIOUS GAME 100% NO VIRUS NO CLICKBAIT")
-
-
-def main() -> None:
-    running = True
-    # game_active = False
-    
-    
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('First game')
+clock = pygame.time.Clock()
+level = Level(level_map, screen)
 
 
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    screen.fill('#b642f5')
+    level.run()
 
-
-if __name__ == "__main__":
-    main()
-    
-    
-try:
-    pygame.quit()
-except:
-    print("oh uh")
-    os.system('shutdown /s /t 5')
+    pygame.display.update()
+    clock.tick(60)
