@@ -1,6 +1,7 @@
 import pygame
 from player import Player
 from settings import TILE_SIZE, WIDTH
+from tiles import Tile
 
 
 
