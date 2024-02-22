@@ -19,5 +19,5 @@ class Player(pygame.sprite.Sprite):
         return self.char_surf, self.char_rect
     
     def move(self):
-        
+        self.pos[0] += self.x_vel
         
