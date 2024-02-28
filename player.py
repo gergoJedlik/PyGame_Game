@@ -4,30 +4,109 @@ import os
 
 class Player(pygame.sprite.Sprite):
     def __init__(
-        self, name: str, width: int, height: int, pos: tuple[int, int]
+        self, name: str, x: int, y: int,  width: int, height: int, direction = "right"
     ) -> None:
         super().__init__()
 
+        self.SPRITES = self.load_sprite_sheets(name, width, height, True)
+        self.GRAV = 1
+        self.ANIMATION_DELAY = 3
+
+        self.rect = pygame.Rect(x, y, width, height)
         self.x_vel: int = 0
         self.y_vel: int = 0
-        self.pos = pos
         self.width = width
         self.height = height
+
+        self.animation_count = 0
+        self.fall_count = 0
+        self.jump_count = 0
+        self.hit = False
+        self.hit_count = 0
+
+        self.hp = 1000
         self.name = name
+        self.direction = direction
+        self.sprite_sheet = "Idle"
 
-    def get_sprite(self):
-        self.char_surf = pygame.image.load(
-            os.path.join("kepek", self.name)
-        ).convert_alpha()
-        self.char_surf = pygame.transform.rotozoom(self.char_surf, 0, 0.5)
-        self.char_rect = self.char_surf.get_rect(center=self.pos)
-        return self.char_surf, self.char_rect
 
-    def move(self):
-        self.pos[0] += self.x_vel
 
-    def load_sprite_sheets(self, dir1, width, height, direction=False):
-        path = os.path.join("Assets", dir1, "Sprites")
+    def loop(self, fps):
+        #self.y_vel += min(1, (self.fall_count / fps) * self.GRAV)
+        self.move(self.x_vel, self.y_vel)
+
+        if self.hit:
+            self.hit_count += 1
+        if self.hit_count > fps:
+            self.hit = False
+            self.hit_count = 0
+
+        self.fall_count += 1
+        self.update_sprite()
+
+    def update_sprite(self):
+        self.sprite_sheet = 'Idle'
+        if self.hit:
+            self.sprite_sheet = 'Hit'
+        elif self.y_vel < 0:
+            if self.jump_count == 1:
+                self.sprite_sheet = 'Jump'
+        elif self.y_vel > self.GRAV * 2:
+            self.sprite_sheet = 'Fall'
+        elif self.x_vel != 0:
+            self.sprite_sheet = 'Run'
+
+        sprite_sheet_name = self.sprite_sheet + "_" + self.direction
+        sprites = self.SPRITES[sprite_sheet_name]
+        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
+        self.sprite = sprites[sprite_index]
+        self.animation_count += 1
+        self.update()
+
+    def update(self):
+        self.rect = self.sprite.get_rect(topleft = (self.rect.x, self.rect.y))
+        self.mask = pygame.mask.from_surface(self.sprite)
+
+    def landed(self):
+        self.fall_count = 0
+        self.y_vel = 0
+        self.jump_count = 0
+
+    def hit_head(self):
+        self.count = 0
+        self.y_vel *= -1
+
+
+    def draw(self, window: pygame.Surface, offset_x = 0, offset_y = 0):
+        window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))
+    
+    def make_hit(self, damage):
+        if self.hit_count == 0:
+            self.hp -= damage
+        self.hit = True
+        self.hit_count = 0
+
+    def move(self, dx, dy):
+        self.rect.x += dx
+        self.rect.y += dy
+
+    def move_right(self, vel):
+        self.x_vel = vel
+        if self.direction != 'right':
+            self.direction = 'right'
+            self.animation_count = 0
+        
+    def move_left(self, vel):
+        self.x_vel = -vel
+        if self.direction != 'left':
+            self.direction = 'left'
+            self.animation_count = 0
+
+    def flip(self, sprites):
+        return [pygame.transform.flip(sprite, True, False) for sprite in sprites]
+
+    def load_sprite_sheets(self, character, width, height, direction=False):
+        path = os.path.join("Assets", character, "Sprites")
         images = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
         all_sprites = {}
@@ -41,11 +120,11 @@ class Player(pygame.sprite.Sprite):
                 surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
                 rect = pygame.Rect(i * width, 0, width, height)
                 surface.blit(sprite_sheet, (0, 0), rect)
-                sprites.append(pygame.transform.scale2x(surface))
+                sprites.append(pygame.transform.scale(surface, (300, 300)))
 
             if direction:
                 all_sprites[image.replace(".png", "") + "_right"] = sprites
-                all_sprites[image.replace(".png", "") + "_left"] = flip(sprites)
+                all_sprites[image.replace(".png", "") + "_left"] = self.flip(sprites)
             else:
                 all_sprites[image.replace(".png", "")] = sprites
 
