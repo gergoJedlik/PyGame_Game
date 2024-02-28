@@ -1,0 +1,3 @@
+HEIGHT = 720
+WIDHT = 1280
+FPS = 60
