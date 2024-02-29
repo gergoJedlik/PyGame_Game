@@ -10,9 +10,9 @@ class Player(pygame.sprite.Sprite):
 
         self.SPRITES = self.load_sprite_sheets(name, width, height, True)
         self.GRAV = 1
-        self.ANIMATION_DELAY = 3
+        self.ANIMATION_DELAY = 5
 
-        self.rect = pygame.Rect(x, y, width, height)
+        self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
         self.x_vel: int = 0
         self.y_vel: int = 0
         self.width = width
@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.update_sprite()
 
     def update_sprite(self):
-        self.sprite_sheet = 'Idle'
+        self.sprite_sheet = 'Hit'
         if self.hit:
             self.sprite_sheet = 'Hit'
         elif self.y_vel < 0:
@@ -59,7 +59,7 @@ class Player(pygame.sprite.Sprite):
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.SPRITES[sprite_sheet_name]
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
-        self.sprite = sprites[sprite_index]
+        self.sprite: pygame.Surface = sprites[sprite_index]
         self.animation_count += 1
         self.update()
 

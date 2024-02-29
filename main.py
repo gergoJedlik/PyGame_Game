@@ -11,7 +11,7 @@ def main() -> None:
     clock = pygame.time.Clock()
     
     player1 = Player("Huntress", 30, 50, 150, 150)
-    player2 = Player("Samurai", 830, 50, 200, 200, "left")
+    player2 = Player("Samurai", 830, 50, 200, 189, "left")
     
     running = True
     while running: 
