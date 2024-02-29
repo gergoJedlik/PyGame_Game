@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.update_sprite()
 
     def update_sprite(self):
-        self.sprite_sheet = 'Hit'
+        self.sprite_sheet = 'Idle'
         if self.hit:
             self.sprite_sheet = 'Hit'
         elif self.y_vel < 0:
@@ -120,7 +120,7 @@ class Player(pygame.sprite.Sprite):
                 surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
                 rect = pygame.Rect(i * width, 0, width, height)
                 surface.blit(sprite_sheet, (0, 0), rect)
-                sprites.append(pygame.transform.scale(surface, (300, 300)))
+                sprites.append(pygame.transform.scale(surface, (400, 400)))
 
             if direction:
                 all_sprites[image.replace(".png", "") + "_right"] = sprites
