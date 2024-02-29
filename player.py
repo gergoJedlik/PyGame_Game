@@ -120,7 +120,7 @@ class Player(pygame.sprite.Sprite):
                 surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
                 rect = pygame.Rect(i * width, 0, width, height)
                 surface.blit(sprite_sheet, (0, 0), rect)
-                sprites.append(pygame.transform.scale(surface, (400, 400)))
+                sprites.append(pygame.transform.scale(surface, (350, 350)))
 
             if direction:
                 all_sprites[image.replace(".png", "") + "_right"] = sprites

@@ -13,10 +13,10 @@ def main() -> None:
     player1 = Player("Huntress", 30, 50, 150, 150)
     player2 = Player("Samurai", 830, 50, 200, 189, "left")
 
-    attackBox = pygame.Rect(330, 50, 300, 300)
-    attackSurf: pygame.Surface = pygame.image.load(r'kepek\bredket.png')
-    attackSurf = pygame.transform.scale(attackSurf, (300, 300))
-    attack_box = (attackBox, attackSurf)
+    # attackBox = pygame.Rect(330, 50, 300, 300)
+    # attackSurf: pygame.Surface = pygame.image.load(r'kepek\bredket.png')
+    # attackSurf = pygame.transform.scale(attackSurf, (300, 300))
+    # attack_box = (attackBox, attackSurf)
     
     running = True
     while running: 
@@ -30,7 +30,7 @@ def main() -> None:
         handle_movement(player1, player2) 
         
         bg_surface, bg_rect = draw()
-        update(screen, bg_surface, bg_rect, player1, player2, attack_box)
+        update(screen, bg_surface, bg_rect, player1, player2)
 
 
         clock.tick(sett.FPS)
@@ -61,10 +61,11 @@ def handle_movement(player1: Player, player2: Player):
     if (keys[pygame.K_RIGHT]):
         player2.move_right(sett.PLAYER_VEL)
 
-def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, attack_box: tuple[pygame.Rect, pygame.Surface]):
+def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, attack_box: tuple[pygame.Rect, pygame.Surface] | None = None):
     screen.blit(bg_surface, bg_rect)
     #screen.fill((0, 0, 0))
-    screen.blit(attack_box[1], attack_box[0])
+    if attack_box:
+        screen.blit(attack_box[1], attack_box[0])
     player1.draw(screen)
     player2.draw(screen)
     
