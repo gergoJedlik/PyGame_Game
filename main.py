@@ -26,7 +26,7 @@ def main() -> None:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and not player1.P_attack:
                     player1.attack()
-                if event.key == pygame.K_RCTRL  and not player2.P_attack:
+                if event.key == pygame.K_RSHIFT and not player2.P_attack:
                     player2.attack()
 
         player1.loop(sett.FPS)
@@ -73,6 +73,10 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
         screen.blit(attack_box[1], attack_box[0])
     player1.draw(screen)
     player2.draw(screen)
+
+    # --TEST FOR HITBOXES (uncomment to see)--
+    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 5)
+    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 5)
     
     pygame.display.update()
 

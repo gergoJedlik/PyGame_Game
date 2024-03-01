@@ -10,14 +10,16 @@ class Player(pygame.sprite.Sprite):
 
         self.SPRITES = self.load_sprite_sheets(name, width, height, True)
         self.GRAV = 1
-        self.ANIMATION_DELAY = 5
+        self.ANIMATION_DELAY = 4
 
         self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
+        self.hitbox: pygame.Rect = pygame.Rect(x, y , 50, 150)
         self.x_vel: int = 0
         self.y_vel: int = 0
         self.width = width
         self.height = height
 
+        self.prev_sprite_sheet = 'None'
         self.animation_count = 0
         self.fall_count = 0
         self.jump_count = 0
@@ -26,6 +28,10 @@ class Player(pygame.sprite.Sprite):
         self.hit_count = 0
         
         self.P_attack = False
+        self.attack_count = 0
+
+        self.dead = False
+        self.death_count = 0
 
         self.hp = 1000
         self.name = name
@@ -35,7 +41,8 @@ class Player(pygame.sprite.Sprite):
 
 
     def loop(self, fps):
-        #self.y_vel += min(1, (self.fall_count / fps) * self.GRAV)
+        self.check_hp()
+        # self.y_vel += min(1, (self.fall_count / fps) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
 
         if self.hit:
@@ -47,11 +54,19 @@ class Player(pygame.sprite.Sprite):
         self.fall_count += 1
         self.update_sprite()
 
+    def check_hp(self):
+        if self.hp <= 0:
+            self.dead = True
+
     def update_sprite(self):
-        if self.hit:
+        if self.dead:
+            self.sprite_sheet = 'Death'
+            self.death_count += 1
+        elif self.hit:
             self.sprite_sheet = 'Hit'
         elif self.P_attack:
             self.sprite_sheet = 'Attack1'
+            self.attack_count += 1
         elif self.y_vel < 0:
             if self.jump_count == 1:
                 self.sprite_sheet = 'Jump'
@@ -61,16 +76,29 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Run'
         else:
             self.sprite_sheet = 'Idle'
+
+        # Resets Animation Count When New Animation Begins
+        if self.sprite_sheet != self.prev_sprite_sheet:
+            self.animation_count = 0
+
+        self.prev_sprite_sheet = self.sprite_sheet
     
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.SPRITES[sprite_sheet_name]
-        
-        if self.P_attack and (self.animation_count // self.ANIMATION_DELAY) % len(sprites) == 0:
-            self.P_attack = False
-
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
         self.sprite: pygame.Surface = sprites[sprite_index]
+
         self.animation_count += 1
+
+        # Death Animation Stalls On Last Frame
+        if self.dead and (self.death_count // self.ANIMATION_DELAY) + 1 > len(sprites):
+            self.death_count = len(sprites)
+
+        # Animation Counter Resets At The End Of Animations
+        if (self.animation_count // self.ANIMATION_DELAY) >= len(sprites):
+            self.animation_count = 0
+            self.P_attack = False
+
         self.update()
 
     def update(self):
@@ -100,8 +128,12 @@ class Player(pygame.sprite.Sprite):
         self.hit_count = 0
 
     def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+        if not self.P_attack:
+            self.rect.x += dx
+            self.rect.y += dy
+
+            self.hitbox.x += dx
+            self.hitbox.y += dy
 
     def move_right(self, vel):
         self.x_vel = vel
