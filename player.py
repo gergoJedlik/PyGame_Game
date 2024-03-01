@@ -21,8 +21,11 @@ class Player(pygame.sprite.Sprite):
         self.animation_count = 0
         self.fall_count = 0
         self.jump_count = 0
+        
         self.hit = False
         self.hit_count = 0
+        
+        self.P_attack = False
 
         self.hp = 1000
         self.name = name
@@ -45,9 +48,10 @@ class Player(pygame.sprite.Sprite):
         self.update_sprite()
 
     def update_sprite(self):
-        self.sprite_sheet = 'Idle'
         if self.hit:
             self.sprite_sheet = 'Hit'
+        elif self.P_attack:
+            self.sprite_sheet = 'Attack1'
         elif self.y_vel < 0:
             if self.jump_count == 1:
                 self.sprite_sheet = 'Jump'
@@ -55,9 +59,15 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Fall'
         elif self.x_vel != 0:
             self.sprite_sheet = 'Run'
-
+        else:
+            self.sprite_sheet = 'Idle'
+    
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.SPRITES[sprite_sheet_name]
+        
+        if self.P_attack and (self.animation_count // self.ANIMATION_DELAY) % len(sprites) == 0:
+            self.P_attack = False
+
         sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
         self.sprite: pygame.Surface = sprites[sprite_index]
         self.animation_count += 1
@@ -66,6 +76,9 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.rect = self.sprite.get_rect(topleft = (self.rect.x, self.rect.y))
         self.mask = pygame.mask.from_surface(self.sprite)
+        
+    def attack(self):
+        self.P_attack = True
 
     def landed(self):
         self.fall_count = 0

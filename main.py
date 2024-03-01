@@ -23,6 +23,11 @@ def main() -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and not player1.P_attack:
+                    player1.attack()
+                if event.key == pygame.K_RCTRL  and not player2.P_attack:
+                    player2.attack()
 
         player1.loop(sett.FPS)
         player2.loop(sett.FPS)
