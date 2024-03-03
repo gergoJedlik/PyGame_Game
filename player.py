@@ -1,4 +1,5 @@
 import pygame
+import settings as sett
 import os
 
 
@@ -10,10 +11,16 @@ class Player(pygame.sprite.Sprite):
 
         self.SPRITES = self.load_sprite_sheets(name, width, height, True)
         self.GRAV = 1
-        self.ANIMATION_DELAY = 4
+        self.ANIMATION_DELAY = sett.ANIMATION_DELAY
 
         self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
-        self.hitbox: pygame.Rect = pygame.Rect(x, y , 50, 150)
+        if name == 'Huntress':
+            self.hitbox: pygame.Rect = pygame.Rect(x+width, y+height-13, 50, height*0.6)
+            self.p1_hb_cord = self.hitbox.bottomleft
+        else:
+            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75), y+(height*0.7), 50, height*0.5)
+            self.p1_hb_cord = self.hitbox.bottomleft 
+
         self.x_vel: int = 0
         self.y_vel: int = 0
         self.width = width
@@ -29,11 +36,22 @@ class Player(pygame.sprite.Sprite):
         
         self.P_attack = False
         self.attack_count = 0
+        if name == 'Huntress':
+            self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*2.41, self.hitbox.height * 1.7)
+        else: 
+            self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*3.1, self.hitbox.height * 1.36)
+        if direction == 'right':
+            self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
+        else: 
+            self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
+        self.attackbox_active = False
 
         self.dead = False
         self.death_count = 0
 
-        self.hp = 1000
+        self.hp = 360
+        self.dmg = 45
+
         self.name = name
         self.direction = direction
         self.sprite_sheet = "Idle"
@@ -47,7 +65,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.hit:
             self.hit_count += 1
-        if self.hit_count > fps:
+        if self.hit_count > fps//2:
             self.hit = False
             self.hit_count = 0
 
@@ -66,7 +84,8 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Hit'
         elif self.P_attack:
             self.sprite_sheet = 'Attack1'
-            self.attack_count += 1
+            if self.animation_count // self.ANIMATION_DELAY > 3:
+                    self.attackbox_active = True
         elif self.y_vel < 0:
             if self.jump_count == 1:
                 self.sprite_sheet = 'Jump'
@@ -80,24 +99,25 @@ class Player(pygame.sprite.Sprite):
         # Resets Animation Count When New Animation Begins
         if self.sprite_sheet != self.prev_sprite_sheet:
             self.animation_count = 0
+            
 
         self.prev_sprite_sheet = self.sprite_sheet
     
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.SPRITES[sprite_sheet_name]
-        sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
+        if not self.dead:
+            sprite_index = (self.animation_count // self.ANIMATION_DELAY) % len(sprites)
+        else:
+            sprite_index = (self.death_count // self.ANIMATION_DELAY) % len(sprites)
         self.sprite: pygame.Surface = sprites[sprite_index]
 
         self.animation_count += 1
-
-        # Death Animation Stalls On Last Frame
-        if self.dead and (self.death_count // self.ANIMATION_DELAY) + 1 > len(sprites):
-            self.death_count = len(sprites)
 
         # Animation Counter Resets At The End Of Animations
         if (self.animation_count // self.ANIMATION_DELAY) >= len(sprites):
             self.animation_count = 0
             self.P_attack = False
+            self.attackbox_active = False
 
         self.update()
 
@@ -124,27 +144,32 @@ class Player(pygame.sprite.Sprite):
     def make_hit(self, damage):
         if self.hit_count == 0:
             self.hp -= damage
-        self.hit = True
         self.hit_count = 0
-
+        self.hit = True
+        print(self.hp)
+        
     def move(self, dx, dy):
-        if not self.P_attack:
-            self.rect.x += dx
-            self.rect.y += dy
+        self.rect.x += dx
+        self.rect.y += dy
 
-            self.hitbox.x += dx
-            self.hitbox.y += dy
+        self.hitbox.x += dx
+        self.hitbox.y += dy
+
+        self.attackbox.x += dx
+        self.attackbox.y += dy
 
     def move_right(self, vel):
         self.x_vel = vel
         if self.direction != 'right':
             self.direction = 'right'
+            self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
         
     def move_left(self, vel):
         self.x_vel = -vel
         if self.direction != 'left':
             self.direction = 'left'
+            self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
 
     def flip(self, sprites):
