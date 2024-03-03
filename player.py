@@ -65,7 +65,7 @@ class Player(pygame.sprite.Sprite):
 
     def loop(self, fps):
         self.check_hp()
-        # self.y_vel += min(1, (self.fall_count / fps) * self.GRAV)
+        # self.y_vel += min(6, (self.fall_count / 5) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
 
         if self.hit:
@@ -76,6 +76,13 @@ class Player(pygame.sprite.Sprite):
 
         self.fall_count += 1
         self.update_sprite()
+
+    def jump(self):
+        self.y_vel = -self.GRAV * 7.5 
+        self.animation_count = 0
+        if self.jump_count == 1:
+            self.fall_count = 0
+        self.jump_count += 1
 
     def check_hp(self):
         if self.hp <= 0:
@@ -143,7 +150,6 @@ class Player(pygame.sprite.Sprite):
     def hit_head(self):
         self.count = 0
         self.y_vel *= -1
-
 
     def draw(self, window: pygame.Surface, offset_x = 0, offset_y = 0):
         window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))

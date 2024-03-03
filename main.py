@@ -1,6 +1,7 @@
 import pygame
 import settings as sett
 from player import Player
+from tiles import Tile, Object
 import os
 
 pygame.init()
@@ -10,8 +11,10 @@ def main() -> None:
     pygame.display.set_caption("Jatek")
     clock = pygame.time.Clock()
     
-    player1 = Player("Huntress", 30, 50, 150, 150)
-    player2 = Player("Samurai", 830, 50, 200, 189, "left")
+    player1 = Player("Huntress", 30, sett.HEIGHT-290, 150, 150)
+    player2 = Player("Samurai", 900, sett.HEIGHT-290, 200, 189, "left")
+
+    floor = [Tile(i * 192, sett.HEIGHT - 128, 192, 128) for i in range(-sett.WIDHT // 192, sett.WIDHT * 2 // 128)]
     
     running = True
     while running: 
@@ -23,6 +26,10 @@ def main() -> None:
                     player1.attack()
                 if event.key == pygame.K_RSHIFT and not player2.P_attack:
                     player2.attack()
+                if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1:
+                    player1.jump()
+                if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1:
+                    player2.jump()
                 # MAKE A DASH FUNCTION
                 # if event.key == pygame.K_LSHIFT:
                 #     if player1.direction == "left":
@@ -33,12 +40,12 @@ def main() -> None:
         player1.loop(sett.FPS)
         player2.loop(sett.FPS)
 
-        handle_movement(player1, player2)
+        handle_movement(player1, player2, floor)
 
         handle_hit(player1, player2)
 
         bg_surface, bg_rect = draw()
-        update(screen, bg_surface, bg_rect, player1, player2)
+        update(screen, bg_surface, bg_rect, player1, player2, floor)
 
 
         clock.tick(sett.FPS)
@@ -50,7 +57,7 @@ def draw():
     bg_rect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT))
     return bg_surface, bg_rect
 
-def handle_movement(player1: Player, player2: Player):
+def handle_movement(player1: Player, player2: Player, objects):
     keys = pygame.key.get_pressed()
 
     player1.x_vel = 0
@@ -71,6 +78,8 @@ def handle_movement(player1: Player, player2: Player):
         if (keys[pygame.K_RIGHT]):
             player2.move_right(sett.PLAYER_VEL)
 
+    handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
+
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
         if player1.attackbox.colliderect(player2.hitbox):
@@ -90,8 +99,32 @@ def handle_hit(player1: Player, player2: Player):
             # else:
             #     player1.move_left(sett.PLAYER_VEL*8)
 
-def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player):
+def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy, p2_dy):
+    collided_objs = []
+    for obj in objects:
+        if pygame.Rect.colliderect(player1.hitbox, obj):
+            if p1_dy > 0:
+                player1.hitbox.bottom = obj.rect.top + 35
+                player1.landed()
+            elif p1_dy < 0:
+                player1.hitbox.top = obj.rect.bottom
+                player1.hit_head()
+
+        if pygame.sprite.collide_mask(player2, obj):
+            if p2_dy > 0:
+                player2.hitbox.bottom = obj.rect.top + 35
+                player2.landed()
+            elif p2_dy < 0:
+                player2.rect.top = obj.rect.bottom
+                player2.hit_head()
+            
+            collided_objs.append(obj)
+
+def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, floor):
     screen.blit(bg_surface, bg_rect)
+
+    for obj in floor:
+        obj.draw(screen)
 
     # --TESTS FOR HITBOXES (uncomment to see)--
     # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
