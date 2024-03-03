@@ -23,6 +23,12 @@ def main() -> None:
                     player1.attack()
                 if event.key == pygame.K_RSHIFT and not player2.P_attack:
                     player2.attack()
+                # MAKE A DASH FUNCTION
+                # if event.key == pygame.K_LSHIFT:
+                #     if player1.direction == "left":
+                #         player1.move_left(sett.PLAYER_VEL*5)
+                #     else:
+                #         player1.move_right(sett.PLAYER_VEL*5)
 
         player1.loop(sett.FPS)
         player2.loop(sett.FPS)
@@ -88,12 +94,12 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     screen.blit(bg_surface, bg_rect)
 
     # --TESTS FOR HITBOXES (uncomment to see)--
-    pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
-    pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    if player1.attackbox_active:
-        pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    if player2.attackbox_active:
-        pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
+    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
+    # if player1.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # if player2.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)

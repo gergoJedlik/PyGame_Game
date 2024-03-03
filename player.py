@@ -28,11 +28,15 @@ class Player(pygame.sprite.Sprite):
 
         self.prev_sprite_sheet = 'None'
         self.animation_count = 0
+        self.name = name
+        self.direction = direction
+        self.sprite_sheet = "Idle"
+
         self.fall_count = 0
         self.jump_count = 0
         
-        self.hit = False
-        self.hit_count = 0
+        self.dash = False
+        self.dash_count = 7 * self.ANIMATION_DELAY
         
         self.P_attack = False
         self.attack_count = 0
@@ -46,15 +50,16 @@ class Player(pygame.sprite.Sprite):
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
         self.attackbox_active = False
 
+        self.hit = False
+        self.hit_count = 0
+
         self.dead = False
         self.death_count = 0
 
         self.hp = 360
         self.dmg = 45
 
-        self.name = name
-        self.direction = direction
-        self.sprite_sheet = "Idle"
+        
 
 
 
@@ -93,6 +98,8 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Fall'
         elif self.x_vel != 0:
             self.sprite_sheet = 'Run'
+        elif self.dash:
+            self.sprite_sheet = 'Dash'
         else:
             self.sprite_sheet = 'Idle'
 
