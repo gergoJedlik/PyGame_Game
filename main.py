@@ -40,6 +40,7 @@ def main() -> None:
         player1.loop(sett.FPS)
         player2.loop(sett.FPS)
 
+
         handle_movement(player1, player2, floor)
 
         handle_hit(player1, player2)
@@ -123,6 +124,13 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
 def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, floor):
     screen.blit(bg_surface, bg_rect)
 
+    health1_bg = pygame.Rect(47, 47, 366, 31)
+    health2_bg = pygame.Rect(0, 0, 366, 31)
+    health2_bg.topright = (sett.WIDHT - 47, 47)
+    player1_health = pygame.Rect(50, 50, player1.hp, 25)
+    player2_health = pygame.Rect(0, 0, player2.hp, 25)
+    player2_health.topright = (sett.WIDHT - 50, 50)
+
     for obj in floor:
         obj.draw(screen)
 
@@ -136,6 +144,11 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     
     player1.draw(screen)
     player2.draw(screen)
+
+    pygame.draw.rect(screen, (255, 135, 10), health1_bg, border_radius=7)
+    pygame.draw.rect(screen, (255, 135, 10), health2_bg, border_radius=7)
+    pygame.draw.rect(screen, (255, 0, 0), player1_health)
+    pygame.draw.rect(screen, (255, 0, 0), player2_health)
 
     
     
