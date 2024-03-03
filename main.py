@@ -45,7 +45,7 @@ def main() -> None:
         
 
 def draw():
-    bg_surface = pygame.image.load(os.path.join("Assets", "Tileset", "Background_0.png"))
+    bg_surface = pygame.image.load(os.path.join("Assets", "Tileset", "Background_0.png")).convert()
     bg_surface = pygame.transform.scale(bg_surface, (sett.WIDHT, sett.HEIGHT))
     bg_rect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT))
     return bg_surface, bg_rect
