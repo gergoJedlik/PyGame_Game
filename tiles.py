@@ -20,6 +20,8 @@ class Tile(Object):
         block = self.get_block(width, height)
         self.image.blit(block, (0, 0))
         self.mask = pygame.mask.from_surface(self.image)
+        self.collidebox = pygame.Rect(x, y, width, height//2)
+        self.collidebox.bottomleft = self.rect.bottomleft
         self.coordinates: tuple[int, int] = (x, y)
 
     def get_block(self, x, y):

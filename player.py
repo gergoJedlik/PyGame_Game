@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite):
         self.update_sprite()
 
     def jump(self):
-        self.y_vel = -self.GRAV * 7.5 
+        self.y_vel = -self.GRAV * 200 
         self.animation_count = 0
         if self.jump_count == 1:
             self.fall_count = 0
@@ -95,9 +95,16 @@ class Player(pygame.sprite.Sprite):
         elif self.hit:
             self.sprite_sheet = 'Hit'
         elif self.P_attack:
-            self.sprite_sheet = 'Attack1'
+            print(self.attack_count)
+            if self.attack_count == 1:
+                self.sprite_sheet = 'Attack1'
+            else:
+                self.sprite_sheet = 'Attack2'
+
             if self.animation_count // self.ANIMATION_DELAY > 3:
-                    self.attackbox_active = True
+                self.attackbox_active = True
+            if self.animation_count // self.ANIMATION_DELAY == 5:
+                self.attack_count += 1
         elif self.y_vel < 0:
             if self.jump_count == 1:
                 self.sprite_sheet = 'Jump'
@@ -116,6 +123,8 @@ class Player(pygame.sprite.Sprite):
             
 
         self.prev_sprite_sheet = self.sprite_sheet
+
+        
     
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.SPRITES[sprite_sheet_name]
@@ -126,6 +135,10 @@ class Player(pygame.sprite.Sprite):
         self.sprite: pygame.Surface = sprites[sprite_index]
 
         self.animation_count += 1
+
+        if self.sprite_sheet != 'Attack1':
+            if self.animation_count // self.ANIMATION_DELAY >= len(sprites):
+                self.attack_count = 1
 
         # Animation Counter Resets At The End Of Animations
         if (self.animation_count // self.ANIMATION_DELAY) >= len(sprites):

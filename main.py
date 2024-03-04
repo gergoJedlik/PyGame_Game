@@ -73,18 +73,17 @@ def handle_movement(player1: Player, player2: Player, objects):
 
     if not player1.hit and not player1.P_attack:
         if (keys[pygame.K_a]):
-            player1.move_left(sett.PLAYER_VEL)
+            player1.move_left(sett.PLAYER_VEL_1)
         if (keys[pygame.K_d]):
-            player1.move_right(sett.PLAYER_VEL)
+            player1.move_right(sett.PLAYER_VEL_1)
 
     if not player2.hit and not player2.P_attack:
         if (keys[pygame.K_LEFT]):
-            player2.move_left(sett.PLAYER_VEL)
+            player2.move_left(sett.PLAYER_VEL_2)
         if (keys[pygame.K_RIGHT]):
-            player2.move_right(sett.PLAYER_VEL)
+            player2.move_right(sett.PLAYER_VEL_2)
 
 
-    print(player1.y_vel, player2.y_vel)
     
 
 def handle_hit(player1: Player, player2: Player):
@@ -109,21 +108,20 @@ def handle_hit(player1: Player, player2: Player):
 def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy, p2_dy):
     collided_objs = []
     for obj in objects:
-        if pygame.sprite.collide_mask(player1, obj):
+        if pygame.Rect.colliderect(player1.hitbox, obj.collidebox):
             if p1_dy > 0:
-                print("Player 1 collide")
                 player1.move(0, -p1_dy)
                 player1.landed()
             elif p1_dy < 0:
                 player1.move(0, p1_dy)
                 player1.hit_head()
 
-        if pygame.sprite.collide_mask(player2, obj):
+        if pygame.Rect.colliderect(player2.hitbox, obj.collidebox):
             if p2_dy > 0:
                 player2.move(0, -p2_dy)
                 player2.landed()
             elif p2_dy < 0:
-                player2.move(0, p1_dy)
+                player2.move(0, p2_dy)
                 player2.hit_head()
             
             collided_objs.append(obj)
@@ -142,13 +140,15 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     for obj in floor:
         obj.draw(screen)
 
-    # --TESTS FOR HITBOXES (uncomment to see)--
-    pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
-    pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    if player1.attackbox_active:
-        pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    if player2.attackbox_active:
-        pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+
+    # SHOW HITBOXES
+    #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
+    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
+    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
+    # if player1.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # if player2.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
