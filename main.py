@@ -11,12 +11,12 @@ def main() -> None:
     pygame.display.set_caption("Jatek")
     clock = pygame.time.Clock()
     
-    player1 = Player("Huntress", 30, sett.HEIGHT-290, 150, 150)
-    player2 = Player("Samurai", 900, sett.HEIGHT-290, 200, 189, "left")
+    player1 = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
+    player2 = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+
 
     level = Level(sett.LEVEL_MAP_STR)
     floor = level.get_objects
-    print(floor)
     
     running = True
     while running: 
@@ -63,6 +63,8 @@ def draw():
 def handle_movement(player1: Player, player2: Player, objects):
     keys = pygame.key.get_pressed()
 
+    handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
+
     player1.x_vel = 0
     player1.y_vel = 0
 
@@ -81,7 +83,9 @@ def handle_movement(player1: Player, player2: Player, objects):
         if (keys[pygame.K_RIGHT]):
             player2.move_right(sett.PLAYER_VEL)
 
-    handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
+
+    print(player1.y_vel, player2.y_vel)
+    
 
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
@@ -105,20 +109,21 @@ def handle_hit(player1: Player, player2: Player):
 def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy, p2_dy):
     collided_objs = []
     for obj in objects:
-        if pygame.Rect.colliderect(player1.hitbox, obj):
+        if pygame.sprite.collide_mask(player1, obj):
             if p1_dy > 0:
-                player1.hitbox.bottom = obj.rect.top + 35
+                print("Player 1 collide")
+                player1.move(0, -p1_dy)
                 player1.landed()
             elif p1_dy < 0:
-                player1.hitbox.top = obj.rect.bottom
+                player1.move(0, p1_dy)
                 player1.hit_head()
 
         if pygame.sprite.collide_mask(player2, obj):
             if p2_dy > 0:
-                player2.hitbox.bottom = obj.rect.top + 35
+                player2.move(0, -p2_dy)
                 player2.landed()
             elif p2_dy < 0:
-                player2.rect.top = obj.rect.bottom
+                player2.move(0, p1_dy)
                 player2.hit_head()
             
             collided_objs.append(obj)
@@ -126,6 +131,7 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
 def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, floor):
     screen.blit(bg_surface, bg_rect)
 
+    # Healthbar Lenght Update
     health1_bg = pygame.Rect(47, 47, 366, 31)
     health2_bg = pygame.Rect(0, 0, 366, 31)
     health2_bg.topright = (sett.WIDHT - 47, 47)
@@ -135,7 +141,6 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
 
     for obj in floor:
         obj.draw(screen)
-        print(obj.get_cords)
 
     # --TESTS FOR HITBOXES (uncomment to see)--
     pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)

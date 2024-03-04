@@ -65,7 +65,7 @@ class Player(pygame.sprite.Sprite):
 
     def loop(self, fps):
         self.check_hp()
-        # self.y_vel += min(6, (self.fall_count / 5) * self.GRAV)
+        self.y_vel += min(6, (self.fall_count / 5) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
 
         if self.hit:
@@ -159,7 +159,6 @@ class Player(pygame.sprite.Sprite):
             self.hp -= damage
         self.hit_count = 0
         self.hit = True
-        print(self.hp)
         
     def move(self, dx, dy):
         self.rect.x += dx

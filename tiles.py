@@ -41,7 +41,7 @@ class Level:
         for line_index ,line in enumerate(lvl_map_str):
             for letter_index, letter in enumerate(line):
                 if letter == "x":
-                    self.objects.append(Tile(letter_index * 192, min(sett.HEIGHT-128, 128 * line_index), 192, 128))
+                    self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
 
     @property
     def get_objects(self) -> list[Tile | Object]:
