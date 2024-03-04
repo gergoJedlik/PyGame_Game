@@ -20,6 +20,7 @@ class Tile(Object):
         block = self.get_block(width, height)
         self.image.blit(block, (0, 0))
         self.mask = pygame.mask.from_surface(self.image)
+        self.coordinates: tuple[int, int] = (x, y)
 
     def get_block(self, x, y):
         path = os.path.join('Assets', 'Tileset', 'Tiles.png')
@@ -28,5 +29,22 @@ class Tile(Object):
         rect = pygame.Rect(128, 0, x, y)
         surface.blit(image, (0, 0), rect)
         return pygame.transform.scale2x(surface)
+    
+    @property
+    def get_cords(self) -> tuple[int, int]:
+        return self.coordinates
+
+    
+class Level:
+    def __init__(self, lvl_map_str: list[str]) -> None:
+        self.objects: list[Tile | Object] = []
+        for line_index ,line in enumerate(lvl_map_str):
+            for letter_index, letter in enumerate(line):
+                if letter == "x":
+                    self.objects.append(Tile(letter_index * 192, min(sett.HEIGHT-128, 128 * line_index), 192, 128))
+
+    @property
+    def get_objects(self) -> list[Tile | Object]:
+        return self.objects
 
         

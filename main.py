@@ -1,7 +1,7 @@
 import pygame
 import settings as sett
 from player import Player
-from tiles import Tile, Object
+from tiles import Tile, Level
 import os
 
 pygame.init()
@@ -14,7 +14,9 @@ def main() -> None:
     player1 = Player("Huntress", 30, sett.HEIGHT-290, 150, 150)
     player2 = Player("Samurai", 900, sett.HEIGHT-290, 200, 189, "left")
 
-    floor = [Tile(i * 192, sett.HEIGHT - 128, 192, 128) for i in range(-sett.WIDHT // 192, sett.WIDHT * 2 // 128)]
+    level = Level(sett.LEVEL_MAP_STR)
+    floor = level.get_objects
+    print(floor)
     
     running = True
     while running: 
@@ -133,14 +135,15 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
 
     for obj in floor:
         obj.draw(screen)
+        print(obj.get_cords)
 
     # --TESTS FOR HITBOXES (uncomment to see)--
-    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
-    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    # if player1.attackbox_active:
-    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    # if player2.attackbox_active:
-    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
+    pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
+    if player1.attackbox_active:
+        pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    if player2.attackbox_active:
+        pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
