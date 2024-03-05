@@ -66,10 +66,12 @@ def handle_movement(player1: Player, player2: Player, objects):
     handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
 
     player1.x_vel = 0
-    player1.y_vel = 0
+    if not player1.P_jump:
+        player1.y_vel = 0
 
     player2.x_vel = 0
-    player2.y_vel = 0
+    if not player2.P_jump:
+        player2.y_vel = 0
 
     if not player1.hit and not player1.P_attack:
         if (keys[pygame.K_a]):

@@ -33,7 +33,9 @@ class Player(pygame.sprite.Sprite):
         self.sprite_sheet = "Idle"
 
         self.fall_count = 0
+        self.P_jump = False
         self.jump_count = 0
+        self.jump_force = -self.GRAV * 100
         
         self.dash = False
         self.dash_count = 7 * self.ANIMATION_DELAY
@@ -70,25 +72,38 @@ class Player(pygame.sprite.Sprite):
 
         if self.hit:
             self.hit_count += 1
-        if self.hit_count > fps//2:
+        if self.hit_count > fps//3:
             self.hit = False
             self.hit_count = 0
+
+        if self.P_jump:
+            self.jump()
+
 
         self.fall_count += 1
         self.update_sprite()
 
     def jump(self):
-        self.y_vel = -self.GRAV * 200 
-        self.animation_count = 0
-        if self.jump_count == 1:
-            self.fall_count = 0
-        self.jump_count += 1
+        self.P_jump = True
+        if self.jump_force < 0:
+            self.y_vel = -self.GRAV * 25 
+            self.jump_force += self.GRAV * 25
+
+            self.animation_count = 0
+            if self.jump_count == 1:
+                self.fall_count = 0
+            self.jump_count += 1
+        else:
+            self.P_jump = False
+            self.jump_force = -self.GRAV * 100
+            
 
     def check_hp(self):
         if self.hp <= 0:
             self.dead = True
 
     def update_sprite(self):
+        print(self.P_jump)
         if self.dead:
             self.sprite_sheet = 'Death'
             self.death_count += 1
@@ -105,7 +120,7 @@ class Player(pygame.sprite.Sprite):
                 self.attackbox_active = True
             if self.animation_count // self.ANIMATION_DELAY == 5:
                 self.attack_count += 1
-        elif self.y_vel < 0:
+        elif self.P_jump:
             if self.jump_count == 1:
                 self.sprite_sheet = 'Jump'
         elif self.y_vel > self.GRAV * 2:
