@@ -35,13 +35,13 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.P_jump = False
         self.jump_count = 0
-        self.jump_force = -self.GRAV * 100
+        self.jump_force = -self.GRAV * 160
         
         self.dash = False
         self.dash_count = 7 * self.ANIMATION_DELAY
         
         self.P_attack = False
-        self.attack_count = 0
+        self.attack_count = 1
         if name == 'Huntress':
             self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*2.41, self.hitbox.height * 1.7)
         else: 
@@ -86,8 +86,8 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.P_jump = True
         if self.jump_force < 0:
-            self.y_vel = -self.GRAV * 25 
-            self.jump_force += self.GRAV * 25
+            self.y_vel = -self.GRAV * 10
+            self.jump_force += self.GRAV * 10
 
             self.animation_count = 0
             if self.jump_count == 1:
@@ -95,7 +95,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
         else:
             self.P_jump = False
-            self.jump_force = -self.GRAV * 100
+            self.jump_force = -self.GRAV * 200
             
 
     def check_hp(self):
@@ -103,14 +103,13 @@ class Player(pygame.sprite.Sprite):
             self.dead = True
 
     def update_sprite(self):
-        print(self.P_jump)
+        attack1_ended = False
         if self.dead:
             self.sprite_sheet = 'Death'
             self.death_count += 1
         elif self.hit:
             self.sprite_sheet = 'Hit'
         elif self.P_attack:
-            print(self.attack_count)
             if self.attack_count == 1:
                 self.sprite_sheet = 'Attack1'
             else:
@@ -118,11 +117,8 @@ class Player(pygame.sprite.Sprite):
 
             if self.animation_count // self.ANIMATION_DELAY > 3:
                 self.attackbox_active = True
-            if self.animation_count // self.ANIMATION_DELAY == 5:
-                self.attack_count += 1
         elif self.P_jump:
-            if self.jump_count == 1:
-                self.sprite_sheet = 'Jump'
+            self.sprite_sheet = 'Jump'
         elif self.y_vel > self.GRAV * 2:
             self.sprite_sheet = 'Fall'
         elif self.x_vel != 0:
@@ -134,6 +130,8 @@ class Player(pygame.sprite.Sprite):
 
         # Resets Animation Count When New Animation Begins
         if self.sprite_sheet != self.prev_sprite_sheet:
+            if self.prev_sprite_sheet == 'Attack1':
+                attack1_ended = True
             self.animation_count = 0
             
 
@@ -148,6 +146,10 @@ class Player(pygame.sprite.Sprite):
         else:
             sprite_index = (self.death_count // self.ANIMATION_DELAY) % len(sprites)
         self.sprite: pygame.Surface = sprites[sprite_index]
+
+        if attack1_ended and sprite_index == 0:
+            self.attack_count = 2
+
 
         self.animation_count += 1
 
