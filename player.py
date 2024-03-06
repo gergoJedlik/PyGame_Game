@@ -203,14 +203,20 @@ class Player(pygame.sprite.Sprite):
             self.attackbox.y += dy
 
     def move_right(self, vel):
-        self.x_vel = vel
+        if self.hitbox.right > sett.WIDHT:
+            self.x_vel = 0
+        else:
+            self.x_vel = vel
         if self.direction != 'right':
             self.direction = 'right'
             self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
         
     def move_left(self, vel):
-        self.x_vel = -vel
+        if self.hitbox.left < 0:
+            self.x_vel = 0
+        else:
+            self.x_vel = -vel
         if self.direction != 'left':
             self.direction = 'left'
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
