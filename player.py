@@ -40,6 +40,7 @@ class Player(pygame.sprite.Sprite):
         
         self.P_dash = False
         self.dash_count = 7 * self.ANIMATION_DELAY
+        self.dash_cd = 0
         
         self.P_attack = False
         self.attack_count = 1
@@ -68,7 +69,8 @@ class Player(pygame.sprite.Sprite):
 
     def loop(self, fps):
         self.check_hp()
-        self.y_vel += min(14, (self.fall_count / 4) * self.GRAV)
+        if not self.P_dash:
+            self.y_vel += min(14, (self.fall_count / 4) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
 
         if self.hit:
@@ -82,6 +84,8 @@ class Player(pygame.sprite.Sprite):
             
         if self.P_dash:
             self.dash()
+        elif self.dash_cd != 0: 
+            self.dash_cd -= 15
 
 
         self.fall_count += 1
@@ -103,21 +107,28 @@ class Player(pygame.sprite.Sprite):
             
     def dash(self):
         self.P_dash = True
-        if self.dash_count > 0:
+        if self.dash_count > 0 and self.dash_cd == 0:
+
+            self.jump_force = 0
+            self.fall_count = 0
+
             if self.direction == "left":
                 if self.name == "Huntress":
-                    self.move_left(sett.PLAYER_VEL_1*2)
+                    self.move_left(sett.PLAYER_VEL_1*1.7)
                 else:
-                    self.move_left(sett.PLAYER_VEL_2*2)
+                    self.move_left(sett.PLAYER_VEL_2*2.4)
             else:
                 if self.name == "Huntress":
-                    self.move_right(sett.PLAYER_VEL_1*2)
+                    self.move_right(sett.PLAYER_VEL_1*1.7)
                 else:
-                    self.move_right(sett.PLAYER_VEL_2*2)
+                    self.move_right(sett.PLAYER_VEL_2*2.4)
             self.dash_count -= 1           
         else:
-            self.P_jump = False
-            self.dash_count = 7 * self.ANIMATION_DELAY     
+            self.P_dash = False
+            if self.dash_cd == 0:
+                self.dash_cd = 90
+            self.dash_count = 5 * self.ANIMATION_DELAY
+            self.jump_force = -self.GRAV * 19    
             
 
     def check_hp(self):
@@ -224,7 +235,7 @@ class Player(pygame.sprite.Sprite):
             self.attackbox.y += dy
 
     def move_right(self, vel):
-        if self.hitbox.right > sett.WIDHT:
+        if self.hitbox.right >= sett.WIDHT:
             self.x_vel = 0
         else:
             self.x_vel = vel
@@ -234,7 +245,7 @@ class Player(pygame.sprite.Sprite):
             self.animation_count = 0
         
     def move_left(self, vel):
-        if self.hitbox.left < 0:
+        if self.hitbox.left <= 0:
             self.x_vel = 0
         else:
             self.x_vel = -vel

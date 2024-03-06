@@ -65,21 +65,23 @@ def handle_movement(player1: Player, player2: Player, objects):
 
     handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
 
-    player1.x_vel = 0
+    if not player1.P_dash:
+        player1.x_vel = 0
     if not player1.P_jump:
         player1.y_vel = 0
 
-    player2.x_vel = 0
+    if not player2.P_dash:
+        player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
 
-    if not player1.hit and not player1.P_attack:
+    if not player1.hit and not player1.P_attack and not player1.P_dash:
         if (keys[pygame.K_a]):
             player1.move_left(sett.PLAYER_VEL_1)
         if (keys[pygame.K_d]):
             player1.move_right(sett.PLAYER_VEL_1)
 
-    if not player2.hit and not player2.P_attack:
+    if not player2.hit and not player2.P_attack and not player2.P_dash:
         if (keys[pygame.K_LEFT]):
             player2.move_left(sett.PLAYER_VEL_2)
         if (keys[pygame.K_RIGHT]):
@@ -155,12 +157,12 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
 
     # SHOW HITBOXES
     #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
-    pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
-    pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    # if player1.attackbox_active:
-    pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    # if player2.attackbox_active:
-    pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
+    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
+    # # if player1.attackbox_active:
+    # pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # # if player2.attackbox_active:
+    # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
