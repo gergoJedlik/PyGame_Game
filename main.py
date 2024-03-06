@@ -25,18 +25,18 @@ def main() -> None:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and not player1.P_attack:
                     player1.attack()
-                if event.key == pygame.K_RSHIFT and not player2.P_attack:
+                if event.key == pygame.K_BACKSPACE and not player2.P_attack:
                     player2.attack()
                 if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1:
                     player1.jump()
                 if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1:
                     player2.jump()
-                # MAKE A DASH FUNCTION
-                # if event.key == pygame.K_LSHIFT:
-                #     if player1.direction == "left":
-                #         player1.move_left(sett.PLAYER_VEL*5)
-                #     else:
-                #         player1.move_right(sett.PLAYER_VEL*5)
+                if event.key == pygame.K_LSHIFT:
+                    player1.dash()
+                if event.key == pygame.K_RSHIFT:
+                    player2.dash()
+                
+
 
         player1.loop(sett.FPS)
         player2.loop(sett.FPS)

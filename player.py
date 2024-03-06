@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_count = 0
         self.jump_force = -self.GRAV * 19
         
-        self.dash = False
+        self.P_dash = False
         self.dash_count = 7 * self.ANIMATION_DELAY
         
         self.P_attack = False
@@ -79,6 +79,9 @@ class Player(pygame.sprite.Sprite):
 
         if self.P_jump:
             self.jump()
+            
+        if self.P_dash:
+            self.dash()
 
 
         self.fall_count += 1
@@ -97,6 +100,24 @@ class Player(pygame.sprite.Sprite):
         else:
             self.P_jump = False
             self.jump_force = -self.GRAV * 19
+            
+    def dash(self):
+        self.P_dash = True
+        if self.dash_count > 0:
+            if self.direction == "left":
+                if self.name == "Huntress":
+                    self.move_left(sett.PLAYER_VEL_1*2)
+                else:
+                    self.move_left(sett.PLAYER_VEL_2*2)
+            else:
+                if self.name == "Huntress":
+                    self.move_right(sett.PLAYER_VEL_1*2)
+                else:
+                    self.move_right(sett.PLAYER_VEL_2*2)
+            self.dash_count -= 1           
+        else:
+            self.P_jump = False
+            self.dash_count = 7 * self.ANIMATION_DELAY     
             
 
     def check_hp(self):
@@ -122,9 +143,9 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Jump'
         elif self.y_vel > self.GRAV * 2:
             self.sprite_sheet = 'Fall'
-        elif self.x_vel != 0:
+        elif self.x_vel != 0 and not self.P_dash:
             self.sprite_sheet = 'Run'
-        elif self.dash:
+        elif self.P_dash:
             self.sprite_sheet = 'Dash'
         else:
             self.sprite_sheet = 'Idle'
