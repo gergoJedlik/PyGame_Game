@@ -31,11 +31,12 @@ class Player(pygame.sprite.Sprite):
         self.name = name
         self.direction = direction
         self.sprite_sheet = "Idle"
+        self.display_name = self.create_display_name()
 
         self.fall_count = 0
         self.P_jump = False
         self.jump_count = 0
-        self.jump_force = -self.GRAV * 160
+        self.jump_force = -self.GRAV * 19
         
         self.dash = False
         self.dash_count = 7 * self.ANIMATION_DELAY
@@ -67,7 +68,7 @@ class Player(pygame.sprite.Sprite):
 
     def loop(self, fps):
         self.check_hp()
-        self.y_vel += min(6, (self.fall_count / 5) * self.GRAV)
+        self.y_vel += min(14, (self.fall_count / 4) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
 
         if self.hit:
@@ -86,8 +87,8 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.P_jump = True
         if self.jump_force < 0:
-            self.y_vel = -self.GRAV * 10
-            self.jump_force += self.GRAV * 10
+            self.y_vel = self.jump_force
+            self.jump_force += self.GRAV 
 
             self.animation_count = 0
             if self.jump_count == 1:
@@ -95,7 +96,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
         else:
             self.P_jump = False
-            self.jump_force = -self.GRAV * 200
+            self.jump_force = -self.GRAV * 19
             
 
     def check_hp(self):
@@ -191,14 +192,15 @@ class Player(pygame.sprite.Sprite):
         self.hit = True
         
     def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+        if not self.dead:
+            self.rect.x += dx
+            self.rect.y += dy
 
-        self.hitbox.x += dx
-        self.hitbox.y += dy
+            self.hitbox.x += dx
+            self.hitbox.y += dy
 
-        self.attackbox.x += dx
-        self.attackbox.y += dy
+            self.attackbox.x += dx
+            self.attackbox.y += dy
 
     def move_right(self, vel):
         self.x_vel = vel
@@ -213,6 +215,12 @@ class Player(pygame.sprite.Sprite):
             self.direction = 'left'
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
+            
+    def create_display_name(self) -> tuple[pygame.Surface, pygame.Rect]:
+        font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 32)
+        text: pygame.Surface = font.render(self.name, True, (255, 255, 255), None)
+        textRect: pygame.Rect = text.get_rect()
+        return (text, textRect)
 
     def flip(self, sprites):
         return [pygame.transform.flip(sprite, True, False) for sprite in sprites]

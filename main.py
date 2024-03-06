@@ -14,7 +14,6 @@ def main() -> None:
     player1 = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
     player2 = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
 
-
     level = Level(sett.LEVEL_MAP_STR)
     floor = level.get_objects
     
@@ -60,6 +59,7 @@ def draw():
     bg_rect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT))
     return bg_surface, bg_rect
 
+
 def handle_movement(player1: Player, player2: Player, objects):
     keys = pygame.key.get_pressed()
 
@@ -86,8 +86,6 @@ def handle_movement(player1: Player, player2: Player, objects):
             player2.move_right(sett.PLAYER_VEL_2)
 
 
-    
-
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
         if player1.attackbox.colliderect(player2.hitbox):
@@ -106,6 +104,7 @@ def handle_hit(player1: Player, player2: Player):
             #     player1.move_right(sett.PLAYER_VEL*8)
             # else:
             #     player1.move_left(sett.PLAYER_VEL*8)
+            
 
 def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy, p2_dy):
     collided_objs = []
@@ -127,17 +126,28 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
                 player2.hit_head()
             
             collided_objs.append(obj)
+            
 
-def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, floor):
+def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, floor,):
     screen.blit(bg_surface, bg_rect)
 
     # Healthbar Lenght Update
-    health1_bg = pygame.Rect(47, 47, 366, 31)
+    health1_bg = pygame.Rect(47, 67, 366, 31)
     health2_bg = pygame.Rect(0, 0, 366, 31)
-    health2_bg.topright = (sett.WIDHT - 47, 47)
-    player1_health = pygame.Rect(50, 50, player1.hp, 25)
+    health2_bg.topright = (sett.WIDHT - 47, 67)
+    player1_health = pygame.Rect(50, 70, player1.hp, 25)
     player2_health = pygame.Rect(0, 0, player2.hp, 25)
-    player2_health.topright = (sett.WIDHT - 50, 50)
+    player2_health.topright = (sett.WIDHT - 50, 70)
+    
+    player1.display_name[1].bottomleft = health1_bg.topleft
+    player1.display_name[1].left += 8
+    player1.display_name[1].bottom -= int(6.9) - int(6.9-4.20) * int(6.9/(6.9/3))
+    player2.display_name[1].bottomright = health2_bg.topright
+    player2.display_name[1].bottom -= int(6.9) - int(6.9-4.20) * int(6.9/(6.9/3))
+    player2.display_name[1].left -= 8
+    
+    screen.blit(player1.display_name[0], player1.display_name[1])
+    screen.blit(player2.display_name[0], player2.display_name[1])
 
     for obj in floor:
         obj.draw(screen)
@@ -145,12 +155,12 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
 
     # SHOW HITBOXES
     #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
-    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
-    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
+    pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
+    pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
     # if player1.attackbox_active:
-    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
     # if player2.attackbox_active:
-    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
@@ -160,8 +170,7 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     pygame.draw.rect(screen, (255, 0, 0), player1_health)
     pygame.draw.rect(screen, (255, 0, 0), player2_health)
 
-    
-    
+
     pygame.display.update()
 
 if __name__ == "__main__":
