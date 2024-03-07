@@ -46,8 +46,8 @@ def main() -> None:
 
         handle_hit(player1, player2)
 
-        bg_surface, bg_rect = draw()
-        update(screen, bg_surface, bg_rect, player1, player2, floor)
+        bg_surface, bg_rect, bg_cemetery, bg_crect = draw()
+        update(screen, bg_surface, bg_rect, bg_cemetery, bg_crect, player1, player2, floor)
 
 
         clock.tick(sett.FPS)
@@ -57,7 +57,10 @@ def draw():
     bg_surface = pygame.image.load(os.path.join("Assets", "Tileset", "Background_0.png")).convert()
     bg_surface = pygame.transform.scale(bg_surface, (sett.WIDHT, sett.HEIGHT))
     bg_rect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT))
-    return bg_surface, bg_rect
+    bg_cemetery = pygame.image.load(os.path.join("Assets", "Tileset", "Background_1.png")).convert_alpha()
+    bg_cemetery = pygame.transform.scale(bg_cemetery, (sett.WIDHT, sett.HEIGHT))
+    bg_crect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT))
+    return bg_surface, bg_rect, bg_cemetery, bg_crect
 
 
 def handle_movement(player1: Player, player2: Player, objects):
@@ -130,8 +133,9 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             collided_objs.append(obj)
             
 
-def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2: Player, floor,):
+def update(screen: pygame.Surface, bg_surface, bg_rect, bg_cemetery, bg_crect, player1: Player, player2: Player, floor,):
     screen.blit(bg_surface, bg_rect)
+    screen.blit(bg_cemetery, bg_crect)
 
     # Healthbar Lenght Update
     health1_bg = pygame.Rect(47, 67, 366, 31)
@@ -156,13 +160,13 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
 
 
     # SHOW HITBOXES
-    #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
-    # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
-    # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    # # if player1.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    # # if player2.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+        pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
+    pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
+    pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
+    # if player1.attackbox_active:
+    pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # if player2.attackbox_active:
+    pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
