@@ -69,6 +69,7 @@ class Player(pygame.sprite.Sprite):
 
     def loop(self, fps):
         self.check_hp()
+    
         if not self.P_dash:
             self.y_vel += min(14, (self.fall_count / 4) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
@@ -85,7 +86,7 @@ class Player(pygame.sprite.Sprite):
         if self.P_dash:
             self.dash()
         elif self.dash_cd != 0: 
-            self.dash_cd -= 15
+            self.dash_cd -= 1
 
 
         self.fall_count += 1
