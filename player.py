@@ -41,6 +41,9 @@ class Player(pygame.sprite.Sprite):
         self.P_dash = False
         self.dash_count = 7 * self.ANIMATION_DELAY
         self.dash_cd = 0
+
+        self.knockback_force = sett.PLAYER_VEL_1 * 5
+        self.P_knockback = False
         
         self.P_attack = False
         self.attack_count = 1
@@ -80,6 +83,11 @@ class Player(pygame.sprite.Sprite):
             self.hit = False
             self.hit_count = 0
 
+        if self.P_knockback:
+            self.knockback()
+
+
+        print(self.jump_force)
         if self.P_jump:
             self.jump()
             
@@ -129,7 +137,28 @@ class Player(pygame.sprite.Sprite):
             if self.dash_cd == 0:
                 self.dash_cd = 90
             self.dash_count = 5 * self.ANIMATION_DELAY
-            self.jump_force = -self.GRAV * 19    
+            if not self.P_dash:
+                self.jump_force = -self.GRAV * 19   
+
+    def knockback(self, enemy_dir = None):
+        self.P_knockback = True
+        if enemy_dir:
+            self.enemy_dir_const = enemy_dir
+
+        print(self.knockback_force)
+        if self.knockback_force > 0:
+
+            if self.enemy_dir_const == "left":
+                self.move_left(self.knockback_force)
+            else:
+                self.move_right(self.knockback_force)
+
+            self.knockback_force -= sett.PLAYER_VEL_1//2 
+
+        else:
+            self.P_knockback = False
+            self.knockback_force = sett.PLAYER_VEL_1 * 5
+
             
 
     def check_hp(self):
@@ -155,7 +184,7 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Jump'
         elif self.y_vel > self.GRAV * 2:
             self.sprite_sheet = 'Fall'
-        elif self.x_vel != 0 and not self.P_dash:
+        elif self.x_vel != 0 and not self.P_dash and not self.P_knockback:
             self.sprite_sheet = 'Run'
         elif self.P_dash:
             self.sprite_sheet = 'Dash'
@@ -240,7 +269,7 @@ class Player(pygame.sprite.Sprite):
             self.x_vel = 0
         else:
             self.x_vel = vel
-        if self.direction != 'right':
+        if self.direction != 'right' and not self.P_knockback:
             self.direction = 'right'
             self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
@@ -250,7 +279,7 @@ class Player(pygame.sprite.Sprite):
             self.x_vel = 0
         else:
             self.x_vel = -vel
-        if self.direction != 'left':
+        if self.direction != 'left' and not self.P_knockback:
             self.direction = 'left'
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0

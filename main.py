@@ -39,7 +39,7 @@ def main() -> None:
 
 
         player1.loop(sett.FPS)
-        player2.loop(sett.FPS)
+        # player2.loop(sett.FPS)
 
 
         handle_movement(player1, player2, floor)
@@ -65,12 +65,12 @@ def handle_movement(player1: Player, player2: Player, objects):
 
     handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
 
-    if not player1.P_dash:
+    if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
     if not player1.P_jump:
         player1.y_vel = 0
 
-    if not player2.P_dash:
+    if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
@@ -92,6 +92,7 @@ def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
         if player1.attackbox.colliderect(player2.hitbox):
             player2.make_hit(player1.dmg)
+            player2.knockback(player1.direction)
             # THE IDEA IS TO KNOCKBACK PLAYER2
             # if player1.direction == "right":
             #     player2.move_right(sett.PLAYER_VEL*8)
@@ -101,6 +102,7 @@ def handle_hit(player1: Player, player2: Player):
     if player2.attackbox_active:
         if player2.attackbox.colliderect(player1.hitbox):
             player1.make_hit(player2.dmg)
+            player1.knockback(player2.direction)
             # THE IDEA IS TO KNOCKBACK PLAYER1
             # if player2.direction == "right":
             #     player1.move_right(sett.PLAYER_VEL*8)
@@ -165,7 +167,7 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
-    player2.draw(screen)
+    # player2.draw(screen)
 
     pygame.draw.rect(screen, (255, 135, 10), health1_bg, border_radius=7)
     pygame.draw.rect(screen, (255, 135, 10), health2_bg, border_radius=7)
