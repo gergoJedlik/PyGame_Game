@@ -16,41 +16,63 @@ def main() -> None:
 
     level = Level(sett.LEVEL_MAP_STR)
     floor = level.get_objects
-    
+
+    def menu():
+        menu_surf = pygame.image.load("Assets/Tileset/Background_0.png").convert()
+        menu_surf = pygame.transform.scale(menu_surf, (sett.WIDHT, sett.HEIGHT ))
+        menu_rect: pygame.rect.Rect = menu_surf.get_rect(topleft=(0, 0))
+        return menu_surf, menu_rect
+
+    active: bool = False
     running = True
-    while running: 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not player1.P_attack:
-                    player1.attack()
-                if event.key == pygame.K_BACKSPACE and not player2.P_attack:
-                    player2.attack()
-                if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1:
-                    player1.jump()
-                if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1:
-                    player2.jump()
-                if event.key == pygame.K_LSHIFT:
-                    player1.dash()
-                if event.key == pygame.K_RSHIFT:
-                    player2.dash()
-                
+    while running:
+
+        if active is True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE and not player1.P_attack:
+                        player1.attack()
+                    if event.key == pygame.K_BACKSPACE and not player2.P_attack:
+                        player2.attack()
+                    if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1:
+                        player1.jump()
+                    if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1:
+                        player2.jump()
+                    if event.key == pygame.K_LSHIFT:
+                        player1.dash()
+                    if event.key == pygame.K_RSHIFT:
+                        player2.dash()
 
 
-        player1.loop(sett.FPS)
-        player2.loop(sett.FPS)
 
 
-        handle_movement(player1, player2, floor)
 
-        handle_hit(player1, player2)
-
-        bg_surface, bg_rect, bg_cemetery, bg_crect = draw()
-        update(screen, bg_surface, bg_rect, bg_cemetery, bg_crect, player1, player2, floor)
+            player1.loop(sett.FPS)
+            player2.loop(sett.FPS)
 
 
-        clock.tick(sett.FPS)
+            handle_movement(player1, player2, floor)
+
+            handle_hit(player1, player2)
+
+            bg_surface, bg_rect, bg_cemetery, bg_crect = draw()
+            update(screen, bg_surface, bg_rect, bg_cemetery, bg_crect, player1, player2, floor)
+
+
+            clock.tick(sett.FPS)
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            menu_surf, menu_rect = menu()
+            screen.blit(menu_surf, menu_rect)
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                active = True
+            pygame.display.update()
         
 
 def draw():
