@@ -18,28 +18,29 @@ def main() -> None:
     floor = level.get_objects
     
     running = True
-    while running: 
+    while running:
+         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not player1.P_attack:
+                if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
                     player1.attack()
-                if event.key == pygame.K_BACKSPACE and not player2.P_attack:
+                if event.key == pygame.K_RSHIFT and not player2.P_attack and not player2.dead:
                     player2.attack()
-                if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1:
+                if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1 and not player1.dead:
                     player1.jump()
-                if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1:
+                if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1 and not player2.dead:
                     player2.jump()
-                if event.key == pygame.K_LSHIFT:
+                if event.key == pygame.K_LSHIFT and not player1.P_attack and player1.dash_cd == 0 and not player1.dead:
                     player1.dash()
-                if event.key == pygame.K_RSHIFT:
+                if event.key == pygame.K_MINUS  and not player2.P_attack  and player2.dash_cd == 0 and not player2.dead:
                     player2.dash()
                 
 
 
         player1.loop(sett.FPS)
-        # player2.loop(sett.FPS)
+        player2.loop(sett.FPS)
 
 
         handle_movement(player1, player2, floor)
@@ -161,13 +162,13 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
     # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
     # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    # # if player1.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    # # if player2.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    # if player1.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # if player2.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
-    # player2.draw(screen)
+    player2.draw(screen)
 
     pygame.draw.rect(screen, (255, 135, 10), health1_bg, border_radius=7)
     pygame.draw.rect(screen, (255, 135, 10), health2_bg, border_radius=7)

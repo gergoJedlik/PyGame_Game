@@ -36,10 +36,10 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.P_jump = False
         self.jump_count = 0
-        self.jump_force = -self.GRAV * 19
+        self.jump_force = -self.GRAV * 20
         
         self.P_dash = False
-        self.dash_count = 7 * self.ANIMATION_DELAY
+        self.dash_count = 5 * self.ANIMATION_DELAY
         self.dash_cd = 0
 
         self.knockback_force = sett.PLAYER_VEL_1 * 5
@@ -86,14 +86,14 @@ class Player(pygame.sprite.Sprite):
         if self.P_knockback:
             self.knockback()
 
-
-        print(self.jump_force)
         if self.P_jump:
             self.jump()
             
-        if self.P_dash:
+        print(self.dash_count, self.dash_cd)   
+        if self.P_dash and self.dash_cd == 0:
             self.dash()
-        elif self.dash_cd != 0: 
+        if self.dash_cd != 0:
+            self.P_dash = False 
             self.dash_cd -= 1
 
 
@@ -112,12 +112,13 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
         else:
             self.P_jump = False
-            self.jump_force = -self.GRAV * 19
+            self.jump_force = -self.GRAV * 20
             
     def dash(self):
-        self.P_dash = True
-        if self.dash_count > 0 and self.dash_cd == 0:
-
+        
+        if self.dash_count > 0:
+            self.P_dash = True
+            
             self.jump_force = 0
             self.fall_count = 0
 
@@ -134,18 +135,16 @@ class Player(pygame.sprite.Sprite):
             self.dash_count -= 1           
         else:
             self.P_dash = False
-            if self.dash_cd == 0:
-                self.dash_cd = 90
+            self.dash_cd = 90
             self.dash_count = 5 * self.ANIMATION_DELAY
-            if not self.P_dash:
-                self.jump_force = -self.GRAV * 19   
+            self.jump_force = -self.GRAV * 19    
+  
 
     def knockback(self, enemy_dir = None):
         self.P_knockback = True
         if enemy_dir:
             self.enemy_dir_const = enemy_dir
 
-        print(self.knockback_force)
         if self.knockback_force > 0:
 
             if self.enemy_dir_const == "left":
@@ -178,7 +177,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.sprite_sheet = 'Attack2'
 
-            if self.animation_count // self.ANIMATION_DELAY > 3:
+            if self.animation_count // self.ANIMATION_DELAY >= 4:
                 self.attackbox_active = True
         elif self.P_jump:
             self.sprite_sheet = 'Jump'
@@ -186,7 +185,7 @@ class Player(pygame.sprite.Sprite):
             self.sprite_sheet = 'Fall'
         elif self.x_vel != 0 and not self.P_dash and not self.P_knockback:
             self.sprite_sheet = 'Run'
-        elif self.P_dash:
+        elif self.P_dash and self.dash_cd == 0:
             self.sprite_sheet = 'Dash'
         else:
             self.sprite_sheet = 'Idle'
@@ -256,20 +255,19 @@ class Player(pygame.sprite.Sprite):
     def move(self, dx, dy):
         if not self.dead:
             self.rect.x += dx
-            self.rect.y += dy
-
             self.hitbox.x += dx
-            self.hitbox.y += dy
-
             self.attackbox.x += dx
-            self.attackbox.y += dy
+            
+        self.rect.y += dy
+        self.hitbox.y += dy
+        self.attackbox.y += dy
 
     def move_right(self, vel):
         if self.hitbox.right >= sett.WIDHT:
             self.x_vel = 0
         else:
             self.x_vel = vel
-        if self.direction != 'right' and not self.P_knockback:
+        if self.direction != 'right' and not self.P_knockback and not self.dead:
             self.direction = 'right'
             self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
@@ -279,7 +277,7 @@ class Player(pygame.sprite.Sprite):
             self.x_vel = 0
         else:
             self.x_vel = -vel
-        if self.direction != 'left' and not self.P_knockback:
+        if self.direction != 'left' and not self.P_knockback  and not self.dead:
             self.direction = 'left'
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
