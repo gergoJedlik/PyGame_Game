@@ -18,22 +18,23 @@ def main() -> None:
     floor = level.get_objects
     
     running = True
-    while running: 
+    while running:
+         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not player1.P_attack:
+                if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
                     player1.attack()
-                if event.key == pygame.K_BACKSPACE and not player2.P_attack:
+                if event.key == pygame.K_RSHIFT and not player2.P_attack and not player2.dead:
                     player2.attack()
-                if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1:
+                if event.key == pygame.K_w and not player1.P_attack and player1.jump_count < 1 and not player1.dead:
                     player1.jump()
-                if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1:
+                if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1 and not player2.dead:
                     player2.jump()
-                if event.key == pygame.K_LSHIFT:
+                if event.key == pygame.K_LSHIFT and not player1.P_attack and player1.dash_cd == 0 and not player1.dead:
                     player1.dash()
-                if event.key == pygame.K_RSHIFT:
+                if event.key == pygame.K_MINUS  and not player2.P_attack  and player2.dash_cd == 0 and not player2.dead:
                     player2.dash()
                 
 
@@ -65,12 +66,12 @@ def handle_movement(player1: Player, player2: Player, objects):
 
     handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
 
-    if not player1.P_dash:
+    if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
     if not player1.P_jump:
         player1.y_vel = 0
 
-    if not player2.P_dash:
+    if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
@@ -92,6 +93,7 @@ def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
         if player1.attackbox.colliderect(player2.hitbox):
             player2.make_hit(player1.dmg)
+            player2.knockback(player1.direction)
             # THE IDEA IS TO KNOCKBACK PLAYER2
             # if player1.direction == "right":
             #     player2.move_right(sett.PLAYER_VEL*8)
@@ -101,6 +103,7 @@ def handle_hit(player1: Player, player2: Player):
     if player2.attackbox_active:
         if player2.attackbox.colliderect(player1.hitbox):
             player1.make_hit(player2.dmg)
+            player1.knockback(player2.direction)
             # THE IDEA IS TO KNOCKBACK PLAYER1
             # if player2.direction == "right":
             #     player1.move_right(sett.PLAYER_VEL*8)
@@ -159,10 +162,10 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
     # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
     # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    # # if player1.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    # # if player2.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    # if player1.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # if player2.attackbox_active:
+    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)

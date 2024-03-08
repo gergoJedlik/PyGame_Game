@@ -40,7 +40,7 @@ class Tile(Object):
 class Level:
     def __init__(self, lvl_map_str: list[str]) -> None:
         self.objects: list[Tile | Object] = []
-        for line_index ,line in enumerate(lvl_map_str):
+        for line_index, line in enumerate(lvl_map_str):
             for letter_index, letter in enumerate(line):
                 if letter == "x":
                     self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
