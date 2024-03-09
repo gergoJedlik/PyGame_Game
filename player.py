@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.P_jump = False
         self.jump_count = 0
-        self.jump_force = -self.GRAV * 20
+        self.jump_force = -self.GRAV * 21
         
         self.P_dash = False
         self.dash_count = 5 * self.ANIMATION_DELAY
@@ -74,7 +74,7 @@ class Player(pygame.sprite.Sprite):
         self.check_hp()
     
         if not self.P_dash:
-            self.y_vel += min(14, (self.fall_count / 4) * self.GRAV)
+            self.y_vel += min(18, (self.fall_count / 3) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
 
         if self.hit:
@@ -112,7 +112,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
         else:
             self.P_jump = False
-            self.jump_force = -self.GRAV * 20
+            self.jump_force = -self.GRAV * 21
             
     def dash(self):
         

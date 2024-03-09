@@ -162,10 +162,10 @@ def update(screen: pygame.Surface, bg_surface, bg_rect, player1: Player, player2
     #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
     # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
     # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
-    # if player1.attackbox_active:
-    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
-    # if player2.attackbox_active:
-    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    # # if player1.attackbox_active:
+    # pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    # # if player2.attackbox_active:
+    # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
