@@ -21,6 +21,7 @@ def main() -> None:
     menu_dict = menu()
 
     active: bool = False
+    end: bool = False
     running = True
     while running:
 
@@ -28,7 +29,7 @@ def main() -> None:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN and not end:
                     if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
                         player1.attack()
                     if event.key == pygame.K_RSHIFT and not player2.P_attack and not player2.dead:
@@ -53,19 +54,22 @@ def main() -> None:
 
             update(screen, bg_dict, player1, player2, floor)
 
+            end = check_end(player1, player2)
+
 
             clock.tick(sett.FPS)
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        active = True
+
             screen.fill((0, 0, 0))
             for value in menu_dict.values():
                 screen.blit(value[0], value[1])
 
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                active = True
             pygame.display.update()
 
 def menu() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
@@ -107,6 +111,10 @@ def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
     
     return bg_dict
 
+def check_end(player1: Player, player2: Player):
+    if player1.P_dead or player2.P_dead:
+        return True
+    return False
 
 def handle_movement(player1: Player, player2: Player, objects):
     keys = pygame.key.get_pressed()
