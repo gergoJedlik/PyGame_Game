@@ -55,6 +55,8 @@ def main() -> None:
             update(screen, bg_dict, player1, player2, floor)
 
             end = check_end(player1, player2)
+            if end:
+                active = False
 
 
             clock.tick(sett.FPS)
@@ -64,7 +66,7 @@ def main() -> None:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        active = True
+                        active, end = new_game(player1, player2)
 
             screen.fill((0, 0, 0))
             for value in menu_dict.values():
@@ -110,6 +112,14 @@ def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
         bg_dict[f"grass_{placement}"] = (bg_grass, bg_g_rect)
     
     return bg_dict
+
+def new_game(player1: Player, player2: Player):
+    active = True
+    end = False
+
+    player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
+    player2.reset("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+    return active, end
 
 def check_end(player1: Player, player2: Player):
     if player1.P_dead or player2.P_dead:
