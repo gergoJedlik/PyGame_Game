@@ -319,3 +319,6 @@ class Player(pygame.sprite.Sprite):
                 all_sprites[image.replace(".png", "")] = sprites
 
         return all_sprites
+    
+    def reset(self, name: str, x: int, y: int,  width: int, height: int, direction = "right"):
+        self.__init__(name, x, y, width, height, direction)
