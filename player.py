@@ -62,6 +62,7 @@ class Player(pygame.sprite.Sprite):
 
         self.dead = False
         self.death_count = 0
+        self.P_dead = False
 
         self.hp = 360
         self.dmg = 45
@@ -167,7 +168,12 @@ class Player(pygame.sprite.Sprite):
         attack1_ended = False
         if self.dead:
             self.sprite_sheet = 'Death'
-            self.death_count += 1
+            if self.name == "Huntress" and self.death_count // self.ANIMATION_DELAY == 6:
+                self.P_dead = True
+            elif self.name == "Samurai" and self.death_count // self.ANIMATION_DELAY == 5:
+                self.P_dead = True
+            else:
+                self.death_count += 1
         elif self.hit:
             self.sprite_sheet = 'Hit'
         elif self.P_attack:
@@ -210,7 +216,6 @@ class Player(pygame.sprite.Sprite):
 
         if attack1_ended and sprite_index == 0:
             self.attack_count = 2
-
 
         self.animation_count += 1
 
