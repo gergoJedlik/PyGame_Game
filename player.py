@@ -180,7 +180,7 @@ class Player(pygame.sprite.Sprite):
                 self.attackbox_active = True
         elif self.P_jump:
             self.sprite_sheet = 'Jump'
-        elif self.y_vel > self.GRAV * 2:
+        elif self.y_vel > self.GRAV * 3:
             self.sprite_sheet = 'Fall'
         elif self.x_vel != 0 and not self.P_dash and not self.P_knockback:
             self.sprite_sheet = 'Run'
