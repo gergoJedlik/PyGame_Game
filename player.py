@@ -88,8 +88,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.P_jump:
             self.jump()
-            
-        print(self.dash_count, self.dash_cd)   
+              
         if self.P_dash and self.dash_cd == 0:
             self.dash()
         if self.dash_cd != 0:
