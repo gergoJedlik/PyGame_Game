@@ -66,7 +66,7 @@ def main() -> None:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        active, end = new_game(player1, player2)
+                        active, end = new_game(player1, player2, end)
 
             screen.fill((0, 0, 0))
             for value in menu_dict.values():
@@ -113,12 +113,13 @@ def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
     
     return bg_dict
 
-def new_game(player1: Player, player2: Player):
+def new_game(player1: Player, player2: Player, end):
+    if end:
+        player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
+        player2.reset("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+
     active = True
     end = False
-
-    player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
-    player2.reset("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
     return active, end
 
 def check_end(player1: Player, player2: Player):
