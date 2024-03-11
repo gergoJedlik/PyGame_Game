@@ -2,6 +2,7 @@ import pygame
 import settings as sett
 from player import Player
 from tiles import Tile, Level
+from ui import Healthbar
 import os
 
 pygame.init()
@@ -11,8 +12,10 @@ def main() -> None:
     pygame.display.set_caption("Jatek")
     clock = pygame.time.Clock()
     
-    player1 = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
-    player2 = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+    player1: Player = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
+    player2: Player = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+
+    UI_Elements = get_UI(player1, player2)
 
     level = Level(sett.LEVEL_MAP_STR)
     floor = level.get_objects
@@ -52,11 +55,11 @@ def main() -> None:
 
             handle_hit(player1, player2)
 
-            update(screen, bg_dict, player1, player2, floor)
+            update(screen, bg_dict, player1, player2, UI_Elements, floor)
 
             end = check_end(player1, player2)
             if end:
-                active = False
+                win_screen()
 
 
             clock.tick(sett.FPS)
@@ -74,8 +77,11 @@ def main() -> None:
 
             pygame.display.update()
 
+def win_screen() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
+    pass
+
 def menu() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
-    menu_dict = {}
+    menu_dict: dict[str, tuple[pygame.Surface, pygame.Rect]] = {}
 
     title_font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 128)
     font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 32)
@@ -88,6 +94,16 @@ def menu() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
     menu_dict['press to play'] = (text, textRect)
 
     return menu_dict
+
+def get_UI(player1: Player, player2: Player) -> list[Healthbar]:
+    UI_Elements: list[Healthbar] = []
+
+    player1_healthbar: Healthbar = Healthbar(47, 67, 366, 31, player1)
+    UI_Elements.append(player1_healthbar)
+
+    player2_healthbar: Healthbar = Healthbar(47, 67, 366, 31, player2, "right")
+    UI_Elements.append(player2_healthbar)
+    return UI_Elements
         
 
 def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
@@ -199,22 +215,19 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             collided_objs.append(obj)
             
 
-def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pygame.Rect]], player1: Player, player2: Player, floor,):
+def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pygame.Rect]], player1: Player, player2: Player, ui_elements: list[Healthbar], floor):
     for value in bg_dict.values():
         screen.blit(value[0], value[1])
 
 
     # Healthbar Lenght Update
-    health1_bg = pygame.Rect(47, 67, 366, 31)
-    health2_bg = pygame.Rect(0, 0, 366, 31)
-    health2_bg.topright = (sett.WIDHT - 47, 67)
-    player1_health = pygame.Rect(50, 70, player1.hp, 25)
-    player2_health = pygame.Rect(0, 0, player2.hp, 25)
-    player2_health.topright = (sett.WIDHT - 50, 70)
+    for element in ui_elements:
+        if type(element) == Healthbar:
+            element.update_width()
     
-    player1.display_name[1].bottomleft = health1_bg.topleft
+    player1.display_name[1].bottomleft = ui_elements[0].health_bg.topleft
     player1.display_name[1].left += 8
-    player2.display_name[1].bottomright = health2_bg.topright
+    player2.display_name[1].bottomright = ui_elements[1].health_bg.topright
     player2.display_name[1].left -= 8
     
     screen.blit(player1.display_name[0], player1.display_name[1])
@@ -236,11 +249,8 @@ def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pyga
     player1.draw(screen)
     player2.draw(screen)
 
-    pygame.draw.rect(screen, (255, 135, 10), health1_bg, border_radius=7)
-    pygame.draw.rect(screen, (255, 135, 10), health2_bg, border_radius=7)
-    pygame.draw.rect(screen, (255, 0, 0), player1_health)
-    pygame.draw.rect(screen, (255, 0, 0), player2_health)
-
+    for element in ui_elements:
+        element.draw(screen)
 
     pygame.display.update()
 
