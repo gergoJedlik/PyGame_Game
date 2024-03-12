@@ -73,23 +73,21 @@ def main() -> None:
 
             screen.fill((0, 0, 0))
             for value in menu_dict.values():
-                screen.blit(value[0], value[1])
+                value.draw(screen)
 
             pygame.display.update()
     
 
-def menu() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
-    menu_dict: dict[str, tuple[pygame.Surface, pygame.Rect]] = {}
+def menu() -> dict[str, Text]:
+    menu_dict: dict[str, Text] = {}
 
-    title_font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 128)
-    font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 32)
-    text: pygame.Surface = title_font.render("GAME NAME", True, (255, 255, 255), None)
-    textRect: pygame.Rect = text.get_rect(center=(sett.WIDHT//2, sett.HEIGHT//2))
-    menu_dict["game name"] = (text, textRect)
+    title_text: Text = Text(128, "GAME NAME")
+    title_text.align("center", "center")
+    menu_dict["game name"] = title_text
 
-    text: pygame.Surface = font.render("PRESS 'SPACE' TO PLAY", True, (255, 255, 255), None)
-    textRect: pygame.Rect = text.get_rect(center=(sett.WIDHT//2, (sett.HEIGHT//10)*9))
-    menu_dict['press to play'] = (text, textRect)
+    start_text: Text = Text(32, "PRESS 'SPACE' TO PLAY")
+    start_text.align("center", (sett.HEIGHT//10)*9)
+    menu_dict['press to play'] = start_text
 
     return menu_dict
 
@@ -144,9 +142,9 @@ def new_game(player1: Player, player2: Player, win):
 
 def check_end(player1: Player, player2: Player) -> str|None:
     if player1.P_dead:
-        return "Samurai"
+        return player2.name.upper()
     elif player2.P_dead:
-        return "Huntress"
+        return player1.name.upper()
     return None
 
 def handle_movement(player1: Player, player2: Player, objects):
@@ -251,7 +249,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pyga
         for element in ui_elements.values():
             element.draw(screen)
     else:
-        winner_text: Text = Text(96, player1.name + " won!")
+        winner_text: Text = Text(96, winner + " WON!")
         winner_text.align("center", "center")
 
         restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
