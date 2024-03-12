@@ -54,7 +54,9 @@ def main() -> None:
             player2.loop(sett.FPS)
 
 
-            handle_movement(player1, player2, floor)
+            handle_vertical_collision(player1, player2, floor, player1.y_vel, player2.y_vel)
+            if not win:
+                handle_movement(player1, player2)
 
             handle_hit(player1, player2)
 
@@ -141,10 +143,8 @@ def check_end(player1: Player, player2: Player) -> str|None:
         return player1.name.upper()
     return None
 
-def handle_movement(player1: Player, player2: Player, objects):
+def handle_movement(player1: Player, player2: Player):
     keys = pygame.key.get_pressed()
-
-    handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
 
     if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
@@ -243,13 +243,17 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         for element in ui_elements.values():
             element.draw(screen)
     else:
-        winner_text: Text = Text(96, winner + " WON!")
+        winner_text: Text = Text(96, winner + " WON!", (255, 192, 0))
         winner_text.align("center", "center")
+
+        sub_text: Text = Text(32, " but their fight never ends...")
+        sub_text.align("center", winner_text.textRect.bottom+20)
 
         restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
         restart_text.align("center", (sett.HEIGHT//10)*9)
 
         winner_text.draw(screen)
+        sub_text.draw(screen)
         restart_text.draw(screen)
 
     pygame.display.update()
