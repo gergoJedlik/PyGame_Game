@@ -79,7 +79,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.hit:
             self.hit_count += 1
-        if self.hit_count > fps//3:
+        if self.hit_count > fps//2:
             self.hit = False
             self.hit_count = 0
 
