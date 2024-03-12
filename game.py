@@ -78,6 +78,8 @@ def main() -> None:
                 value.draw(screen)
 
             pygame.display.update()
+            
+    pygame.quit()
     
 
 def menu() -> dict[str, Text]:
@@ -257,8 +259,3 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         restart_text.draw(screen)
 
     pygame.display.update()
-
-if __name__ == "__main__":
-    main()
-
-pygame.quit()
