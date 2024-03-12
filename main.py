@@ -83,7 +83,7 @@ def main() -> None:
 def menu() -> dict[str, Text]:
     menu_dict: dict[str, Text] = {}
 
-    title_text: Text = Text(128, "GAME NAME")
+    title_text: Text = Text(128, "Blades of Destiny", (255, 192, 0), True)
     title_text.align("center", "center")
     menu_dict["game name"] = title_text
 
@@ -246,7 +246,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         winner_text: Text = Text(96, winner + " WON!", (255, 192, 0))
         winner_text.align("center", "center")
 
-        sub_text: Text = Text(32, " but their fight never ends...")
+        sub_text: Text = Text(32, " but their fight never ends...", thin=True)
         sub_text.align("center", winner_text.textRect.bottom+20)
 
         restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")

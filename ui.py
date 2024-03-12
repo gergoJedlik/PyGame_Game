@@ -35,8 +35,11 @@ class Healthbar(UiElement):
 
 
 class Text:
-    def __init__(self, font_size: int, text: str, color: pygame.Color = (255, 255, 255)) -> None:
-        self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), font_size)
+    def __init__(self, font_size: int, text: str, color: pygame.Color = (255, 255, 255), thin = False) -> None:
+        if thin:
+            self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco-Thin.ttf"), font_size)
+        else:
+            self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), font_size)
         self.text: pygame.Surface = self.font.render(text, True, color, None)
         self.textRect: pygame.Rect = self.text.get_rect()
 
