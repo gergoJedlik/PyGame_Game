@@ -78,6 +78,8 @@ def main() -> None:
                 value.draw(screen)
 
             pygame.display.update()
+            
+    pygame.quit()
     
 
 def menu() -> dict[str, Text]:
@@ -172,23 +174,15 @@ def handle_movement(player1: Player, player2: Player):
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
         if player1.attackbox.colliderect(player2.hitbox):
-            player2.make_hit(player1.dmg)
+            if not player2.hit:
+                player2.make_hit(player1.dmg)
             player2.knockback(player1.direction)
-            # THE IDEA IS TO KNOCKBACK PLAYER2
-            # if player1.direction == "right":
-            #     player2.move_right(sett.PLAYER_VEL*8)
-            # else:
-            #     player2.move_left(sett.PLAYER_VEL*8)
 
     if player2.attackbox_active:
         if player2.attackbox.colliderect(player1.hitbox):
-            player1.make_hit(player2.dmg)
+            if not player1.hit:
+                player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
-            # THE IDEA IS TO KNOCKBACK PLAYER1
-            # if player2.direction == "right":
-            #     player1.move_right(sett.PLAYER_VEL*8)
-            # else:
-            #     player1.move_left(sett.PLAYER_VEL*8)
             
 
 def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy, p2_dy):
@@ -257,8 +251,3 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         restart_text.draw(screen)
 
     pygame.display.update()
-
-if __name__ == "__main__":
-    main()
-
-pygame.quit()
