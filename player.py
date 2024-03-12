@@ -31,7 +31,6 @@ class Player(pygame.sprite.Sprite):
         self.name = name
         self.direction = direction
         self.sprite_sheet = "Idle"
-        self.display_name = self.create_display_name()
 
         self.fall_count = 0
         self.P_jump = False
@@ -285,12 +284,6 @@ class Player(pygame.sprite.Sprite):
             self.direction = 'left'
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
-            
-    def create_display_name(self) -> tuple[pygame.Surface, pygame.Rect]:
-        font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 32)
-        text: pygame.Surface = font.render(self.name, True, (255, 255, 255), None)
-        textRect: pygame.Rect = text.get_rect()
-        return (text, textRect)
 
     def flip(self, sprites):
         return [pygame.transform.flip(sprite, True, False) for sprite in sprites]

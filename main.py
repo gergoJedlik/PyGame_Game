@@ -2,6 +2,7 @@ import pygame
 import settings as sett
 from player import Player
 from tiles import Tile, Level
+from ui import Healthbar, Display_Name, Text
 import os
 
 pygame.init()
@@ -11,8 +12,10 @@ def main() -> None:
     pygame.display.set_caption("Jatek")
     clock = pygame.time.Clock()
     
-    player1 = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
-    player2 = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+    player1: Player = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
+    player2: Player = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+
+    UI_Elements = get_UI(player1, player2)
 
     level = Level(sett.LEVEL_MAP_STR)
     floor = level.get_objects
@@ -21,7 +24,7 @@ def main() -> None:
     menu_dict = menu()
 
     active: bool = False
-    end: bool = False
+    win: None|str = None
     running = True
     while running:
 
@@ -29,7 +32,7 @@ def main() -> None:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.KEYDOWN and not end:
+                if event.type == pygame.KEYDOWN and not win:
                     if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
                         player1.attack()
                     if event.key == pygame.K_RSHIFT and not player2.P_attack and not player2.dead:
@@ -42,6 +45,9 @@ def main() -> None:
                         player1.dash()
                     if event.key == pygame.K_MINUS  and not player2.P_attack  and player2.dash_cd == 0 and not player2.dead:
                         player2.dash()
+                elif event.type == pygame.KEYDOWN and win:
+                    if event.key == pygame.K_SPACE:
+                        active, win = new_game(player1, player2, win)
 
 
             player1.loop(sett.FPS)
@@ -52,12 +58,9 @@ def main() -> None:
 
             handle_hit(player1, player2)
 
-            update(screen, bg_dict, player1, player2, floor)
+            win = check_end(player1, player2)
 
-            end = check_end(player1, player2)
-            if end:
-                active = False
-
+            update(screen, bg_dict, player1, player2, UI_Elements, floor, win)
 
             clock.tick(sett.FPS)
         else:
@@ -66,28 +69,43 @@ def main() -> None:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        active, end = new_game(player1, player2, end)
+                        active, win = new_game(player1, player2, win)
 
             screen.fill((0, 0, 0))
             for value in menu_dict.values():
-                screen.blit(value[0], value[1])
+                value.draw(screen)
 
             pygame.display.update()
+    
 
-def menu() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
-    menu_dict = {}
+def menu() -> dict[str, Text]:
+    menu_dict: dict[str, Text] = {}
 
-    title_font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 128)
-    font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), 32)
-    text: pygame.Surface = title_font.render("GAME NAME", True, (255, 255, 255), None)
-    textRect: pygame.Rect = text.get_rect(center=(sett.WIDHT//2, sett.HEIGHT//2))
-    menu_dict["game name"] = (text, textRect)
+    title_text: Text = Text(128, "GAME NAME")
+    title_text.align("center", "center")
+    menu_dict["game name"] = title_text
 
-    text: pygame.Surface = font.render("PRESS 'SPACE' TO PLAY", True, (255, 255, 255), None)
-    textRect: pygame.Rect = text.get_rect(center=(sett.WIDHT//2, (sett.HEIGHT//10)*9))
-    menu_dict['press to play'] = (text, textRect)
+    start_text: Text = Text(32, "PRESS 'SPACE' TO PLAY")
+    start_text.align("center", (sett.HEIGHT//10)*9)
+    menu_dict['press to play'] = start_text
 
     return menu_dict
+
+def get_UI(player1: Player, player2: Player) -> dict[str, Healthbar|Display_Name]:
+    UI_Elements: dict[str, Healthbar] = {}
+
+    player1_healthbar: Healthbar = Healthbar(47, 67, 366, 31, player1)
+    UI_Elements["player1 healthbar"] = player1_healthbar
+
+    player2_healthbar: Healthbar = Healthbar(47, 67, 366, 31, player2, "right")
+    UI_Elements["player2 healthbar"] = player2_healthbar
+
+    player1_displayname: Display_Name = Display_Name("Huntress", player1_healthbar)
+    UI_Elements["player1 name"] = player1_displayname
+
+    player2_displayname: Display_Name = Display_Name("Samurai", player2_healthbar)
+    UI_Elements["player2 name"] = player2_displayname
+    return UI_Elements
         
 
 def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
@@ -113,19 +131,21 @@ def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
     
     return bg_dict
 
-def new_game(player1: Player, player2: Player, end):
-    if end:
+def new_game(player1: Player, player2: Player, win):
+    if win:
         player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
         player2.reset("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
 
     active = True
-    end = False
-    return active, end
+    win = None
+    return active, win
 
-def check_end(player1: Player, player2: Player):
-    if player1.P_dead or player2.P_dead:
-        return True
-    return False
+def check_end(player1: Player, player2: Player) -> str|None:
+    if player1.P_dead:
+        return player2.name.upper()
+    elif player2.P_dead:
+        return player1.name.upper()
+    return None
 
 def handle_movement(player1: Player, player2: Player, objects):
     keys = pygame.key.get_pressed()
@@ -199,26 +219,15 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             collided_objs.append(obj)
             
 
-def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pygame.Rect]], player1: Player, player2: Player, floor,):
+def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pygame.Rect]], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor, winner = None):
     for value in bg_dict.values():
         screen.blit(value[0], value[1])
 
 
     # Healthbar Lenght Update
-    health1_bg = pygame.Rect(47, 67, 366, 31)
-    health2_bg = pygame.Rect(0, 0, 366, 31)
-    health2_bg.topright = (sett.WIDHT - 47, 67)
-    player1_health = pygame.Rect(50, 70, player1.hp, 25)
-    player2_health = pygame.Rect(0, 0, player2.hp, 25)
-    player2_health.topright = (sett.WIDHT - 50, 70)
-    
-    player1.display_name[1].bottomleft = health1_bg.topleft
-    player1.display_name[1].left += 8
-    player2.display_name[1].bottomright = health2_bg.topright
-    player2.display_name[1].left -= 8
-    
-    screen.blit(player1.display_name[0], player1.display_name[1])
-    screen.blit(player2.display_name[0], player2.display_name[1])
+    for element in ui_elements.values():
+        if type(element) == Healthbar:
+            element.update_width()
 
     for obj in floor:
         obj.draw(screen)
@@ -236,11 +245,18 @@ def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pyga
     player1.draw(screen)
     player2.draw(screen)
 
-    pygame.draw.rect(screen, (255, 135, 10), health1_bg, border_radius=7)
-    pygame.draw.rect(screen, (255, 135, 10), health2_bg, border_radius=7)
-    pygame.draw.rect(screen, (255, 0, 0), player1_health)
-    pygame.draw.rect(screen, (255, 0, 0), player2_health)
+    if not winner:
+        for element in ui_elements.values():
+            element.draw(screen)
+    else:
+        winner_text: Text = Text(96, winner + " WON!")
+        winner_text.align("center", "center")
 
+        restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
+        restart_text.align("center", (sett.HEIGHT//10)*9)
+
+        winner_text.draw(screen)
+        restart_text.draw(screen)
 
     pygame.display.update()
 
