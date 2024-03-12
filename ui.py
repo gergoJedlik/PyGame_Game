@@ -33,6 +33,7 @@ class Healthbar(UiElement):
         pygame.draw.rect(screen, (255, 135, 10), self.health_bg, border_radius=7)
         pygame.draw.rect(screen, (255, 0, 0), self.player_health)
 
+
 class Text:
     def __init__(self, font_size: int, text: str, color: pygame.Color = (255, 255, 255)) -> None:
         self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), font_size)
@@ -73,6 +74,7 @@ class Text:
             elif y_alignment_point == "center":
                 self.textRect.centery = y
 
+
 class Display_Name(Text):
     def __init__(self, name: str, healthbar: Healthbar) -> None:
         super().__init__(32, name)
@@ -80,6 +82,7 @@ class Display_Name(Text):
             self.align(healthbar.health_bg.left+8, healthbar.health_bg.top, "left", "bottom")
         else:
             self.align(healthbar.health_bg.right-8, healthbar.health_bg.top, "right", "bottom")
+
 
 class Img():
     def __init__(self, x: int, y: int, path: str, scale_size: tuple[int, int]|None = None, transparent = False, left = False) -> None:
