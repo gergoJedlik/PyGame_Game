@@ -15,10 +15,10 @@ class Player(pygame.sprite.Sprite):
 
         self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
         if name == 'Huntress':
-            self.hitbox: pygame.Rect = pygame.Rect(x+width, y+height-13, 50, height*0.6)
+            self.hitbox: pygame.Rect = pygame.Rect(x+width+8, y+height-13, 53, height*0.7)
             self.p1_hb_cord = self.hitbox.bottomleft
         else:
-            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75), y+(height*0.7), 50, height*0.5)
+            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75)+10, y+(height*0.7)-2, 53, height*0.6)
             self.p1_hb_cord = self.hitbox.bottomleft 
 
         self.x_vel: int = 0
@@ -47,9 +47,9 @@ class Player(pygame.sprite.Sprite):
         self.P_attack = False
         self.attack_count = 1
         if name == 'Huntress':
-            self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*2.41, self.hitbox.height * 1.7)
+            self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*2.5, self.hitbox.height * 1.55)
         else: 
-            self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*3.1, self.hitbox.height * 1.36)
+            self.attackbox: pygame.Rect = pygame.Rect(self.hitbox.centerx, self.hitbox.top, self.hitbox.width*3.15, self.hitbox.height * 1.22)
         if direction == 'right':
             self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
         else: 
@@ -303,7 +303,7 @@ class Player(pygame.sprite.Sprite):
                 surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
                 rect = pygame.Rect(i * width, 0, width, height)
                 surface.blit(sprite_sheet, (0, 0), rect)
-                sprites.append(pygame.transform.scale(surface, (350, 350)))
+                sprites.append(pygame.transform.scale(surface, (375, 375)))
 
             if direction:
                 all_sprites[image.replace(".png", "") + "_right"] = sprites

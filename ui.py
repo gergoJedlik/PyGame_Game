@@ -33,9 +33,13 @@ class Healthbar(UiElement):
         pygame.draw.rect(screen, (255, 135, 10), self.health_bg, border_radius=7)
         pygame.draw.rect(screen, (255, 0, 0), self.player_health)
 
+
 class Text:
-    def __init__(self, font_size: int, text: str, color: pygame.Color = (255, 255, 255)) -> None:
-        self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), font_size)
+    def __init__(self, font_size: int, text: str, color: pygame.Color = (255, 255, 255), thin = False) -> None:
+        if thin:
+            self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco-Thin.ttf"), font_size)
+        else:
+            self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco.ttf"), font_size)
         self.text: pygame.Surface = self.font.render(text, True, color, None)
         self.textRect: pygame.Rect = self.text.get_rect()
 
@@ -73,6 +77,7 @@ class Text:
             elif y_alignment_point == "center":
                 self.textRect.centery = y
 
+
 class Display_Name(Text):
     def __init__(self, name: str, healthbar: Healthbar) -> None:
         super().__init__(32, name)
@@ -80,3 +85,23 @@ class Display_Name(Text):
             self.align(healthbar.health_bg.left+8, healthbar.health_bg.top, "left", "bottom")
         else:
             self.align(healthbar.health_bg.right-8, healthbar.health_bg.top, "right", "bottom")
+
+
+class Img():
+    def __init__(self, x: int, y: int, path: str, scale_size: tuple[int, int]|None = None, transparent = False, left = False) -> None:
+        if transparent:
+            self.surf: pygame.Surface = pygame.image.load(path).convert_alpha()
+        else:
+            self.surf: pygame.Surface = pygame.image.load(path).convert()
+
+        if scale_size:
+            self.surf = pygame.transform.scale(self.surf, scale_size)
+
+        if left:
+            self.rect = self.surf.get_rect(bottomleft=(x, y))
+        else:
+            self.rect = self.surf.get_rect(center=(x, y))
+
+    def draw(self, screen: pygame.Surface):
+        screen.blit(self.surf, self.rect)
+        

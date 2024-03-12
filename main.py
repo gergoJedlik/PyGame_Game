@@ -2,7 +2,7 @@ import pygame
 import settings as sett
 from player import Player
 from tiles import Tile, Level
-from ui import Healthbar, Display_Name, Text
+from ui import Healthbar, Display_Name, Text, Img
 import os
 
 pygame.init()
@@ -20,7 +20,7 @@ def main() -> None:
     level = Level(sett.LEVEL_MAP_STR)
     floor = level.get_objects
 
-    bg_dict = draw()
+    bg_dict = get_background()
     menu_dict = menu()
 
     active: bool = False
@@ -54,7 +54,9 @@ def main() -> None:
             player2.loop(sett.FPS)
 
 
-            handle_movement(player1, player2, floor)
+            handle_vertical_collision(player1, player2, floor, player1.y_vel, player2.y_vel)
+            if not win:
+                handle_movement(player1, player2)
 
             handle_hit(player1, player2)
 
@@ -81,7 +83,7 @@ def main() -> None:
 def menu() -> dict[str, Text]:
     menu_dict: dict[str, Text] = {}
 
-    title_text: Text = Text(128, "GAME NAME")
+    title_text: Text = Text(128, "Blades of Destiny", (255, 192, 0), True)
     title_text.align("center", "center")
     menu_dict["game name"] = title_text
 
@@ -108,27 +110,21 @@ def get_UI(player1: Player, player2: Player) -> dict[str, Healthbar|Display_Name
     return UI_Elements
         
 
-def draw() -> dict[str, tuple[pygame.Surface, pygame.Rect]]:
+def get_background() -> dict[str, Img]:
     bg_dict = {}
 
-    bg_surface = pygame.image.load(os.path.join("Assets", "Tileset", "Background_0.png")).convert()
-    bg_surface = pygame.transform.scale(bg_surface, (sett.WIDHT, sett.HEIGHT))
-    bg_rect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT))
-    bg_dict["background"] = (bg_surface, bg_rect)
+    background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
+    bg_dict["background"] = background
 
-    bg_cemetery = pygame.image.load(os.path.join("Assets", "Tileset", "Background_1.png")).convert_alpha()
-    bg_cemetery = pygame.transform.scale(bg_cemetery, (sett.WIDHT, sett.HEIGHT))
-    bg_crect = bg_surface.get_rect(bottomleft=(0, sett.HEIGHT+75))
-    bg_dict["cemetery"] = (bg_cemetery, bg_crect)
+    bg_building: Img = Img(sett.WIDHT//2, sett.HEIGHT//2+75, os.path.join("Assets", "Tileset", "Background_1.png"), (sett.WIDHT, sett.HEIGHT), True) 
+    bg_dict["building"] = bg_building
 
     for placement in range((sett.WIDHT//352)+1):
         if placement == 0:
-            bg_grass = pygame.image.load(os.path.join("Assets", "Tileset", "Grass_background_2.png")).convert_alpha()
+            bg_grass: Img = Img(0, sett.HEIGHT+30, os.path.join("Assets", "Tileset", "Grass_background_2.png"), transparent=True, left=True)
         else:
-            bg_grass = pygame.image.load(os.path.join("Assets", "Tileset", "Grass_background_1.png")).convert_alpha()
-        bg_g_rect = bg_grass.get_rect(bottomleft=(352*placement, sett.HEIGHT+30))
-        bg_dict[f"grass_{placement}"] = (bg_grass, bg_g_rect)
-    
+            bg_grass: Img = Img(352*placement, sett.HEIGHT+30, os.path.join("Assets", "Tileset", "Grass_background_1.png"), transparent=True, left=True)
+        bg_dict[f"grass_{placement}"] = bg_grass
     return bg_dict
 
 def new_game(player1: Player, player2: Player, win):
@@ -147,10 +143,8 @@ def check_end(player1: Player, player2: Player) -> str|None:
         return player1.name.upper()
     return None
 
-def handle_movement(player1: Player, player2: Player, objects):
+def handle_movement(player1: Player, player2: Player):
     keys = pygame.key.get_pressed()
-
-    handle_vertical_collision(player1, player2, objects, player1.y_vel, player2.y_vel)
 
     if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
@@ -219,9 +213,9 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             collided_objs.append(obj)
             
 
-def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pygame.Rect]], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor, winner = None):
+def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor, winner = None):
     for value in bg_dict.values():
-        screen.blit(value[0], value[1])
+        value.draw(screen)
 
 
     # Healthbar Lenght Update
@@ -249,13 +243,17 @@ def update(screen: pygame.Surface, bg_dict: dict[str, tuple[pygame.Surface, pyga
         for element in ui_elements.values():
             element.draw(screen)
     else:
-        winner_text: Text = Text(96, winner + " WON!")
+        winner_text: Text = Text(96, winner + " WON!", (255, 192, 0))
         winner_text.align("center", "center")
+
+        sub_text: Text = Text(32, " but their fight never ends...", thin=True)
+        sub_text.align("center", winner_text.textRect.bottom+20)
 
         restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
         restart_text.align("center", (sett.HEIGHT//10)*9)
 
         winner_text.draw(screen)
+        sub_text.draw(screen)
         restart_text.draw(screen)
 
     pygame.display.update()
