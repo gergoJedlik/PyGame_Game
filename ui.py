@@ -35,7 +35,7 @@ class Healthbar(UiElement):
 
 
 class Text:
-    def __init__(self, font_size: int, text: str, color: pygame.Color = (255, 255, 255), thin = False) -> None:
+    def __init__(self, font_size: int, text: str, color: pygame.Color = pygame.Color(255, 255, 255), thin: bool = False) -> None:
         if thin:
             self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco-Thin.ttf"), font_size)
         else:
@@ -56,11 +56,11 @@ class Text:
                 self.textRect.right = sett.WIDHT-25
         else:
             if x_alignment_point == "left" or x_alignment_point == None:
-                self.textRect.left = x
+                self.textRect.left = int(x)
             elif x_alignment_point == "right":
-                self.textRect.right = x
+                self.textRect.right = int(x)
             elif x_alignment_point == "center":
-                self.textRect.centerx = x
+                self.textRect.centerx = int(x)
 
         if type(y) == str:
             if y == "center":
@@ -71,11 +71,11 @@ class Text:
                 self.textRect.bottom = sett.HEIGHT-25
         else:
             if y_alignment_point == "top" or y_alignment_point == None:
-                self.textRect.top = y
+                self.textRect.top = int(y)
             elif y_alignment_point == "bottom":
-                self.textRect.bottom = y
+                self.textRect.bottom = int(y)
             elif y_alignment_point == "center":
-                self.textRect.centery = y
+                self.textRect.centery = int(y)
 
 
 class Display_Name(Text):
@@ -88,7 +88,7 @@ class Display_Name(Text):
 
 
 class Img():
-    def __init__(self, x: int, y: int, path: str, scale_size: tuple[int, int]|None = None, transparent = False, left = False) -> None:
+    def __init__(self, x: int, y: int, path: str, scale_size: tuple[int, int]|None = None, transparent: bool = False, left: bool = False) -> None:
         if transparent:
             self.surf: pygame.Surface = pygame.image.load(path).convert_alpha()
         else:
