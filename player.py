@@ -5,7 +5,7 @@ import os
 
 class Player(pygame.sprite.Sprite):
     def __init__(
-        self, name: str, x: int, y: int,  width: int, height: int, direction = "right"
+        self, name: str, x: int, y: int,  width: int, height: int, direction: str = "right"
     ) -> None:
         super().__init__()
 
@@ -21,8 +21,8 @@ class Player(pygame.sprite.Sprite):
             self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75)+10, y+(height*0.7)-2, 53, height*0.6)
             self.p1_hb_cord = self.hitbox.bottomleft 
 
-        self.x_vel: int = 0
-        self.y_vel: int = 0
+        self.x_vel: int|float = 0
+        self.y_vel: int|float = 0
         self.width = width
         self.height = height
 
@@ -70,7 +70,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-    def loop(self, fps):
+    def loop(self, fps: int):
         self.check_hp()
     
         if not self.P_dash:
@@ -139,7 +139,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_force = -self.GRAV * 19    
   
 
-    def knockback(self, enemy_dir = None):
+    def knockback(self, enemy_dir: None|str = None) -> None:
         self.P_knockback = True
         if enemy_dir:
             self.enemy_dir_const = enemy_dir
@@ -159,11 +159,11 @@ class Player(pygame.sprite.Sprite):
 
             
 
-    def check_hp(self):
+    def check_hp(self) -> None:
         if self.hp <= 0:
             self.dead = True
 
-    def update_sprite(self):
+    def update_sprite(self) -> None:
         attack1_ended = False
         if self.dead:
             self.sprite_sheet = 'Death'
@@ -228,9 +228,9 @@ class Player(pygame.sprite.Sprite):
             self.P_attack = False
             self.attackbox_active = False
 
-        self.update()
+        self.update_mask()
 
-    def update(self):
+    def update_mask(self):
         self.rect = self.sprite.get_rect(topleft = (self.rect.x, self.rect.y))
         self.mask = pygame.mask.from_surface(self.sprite)
         
@@ -246,26 +246,26 @@ class Player(pygame.sprite.Sprite):
         self.count = 0
         self.y_vel *= -1
 
-    def draw(self, window: pygame.Surface, offset_x = 0, offset_y = 0):
+    def draw(self, window: pygame.Surface, offset_x: int = 0, offset_y: int = 0):
         window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))
     
-    def make_hit(self, damage):
+    def make_hit(self, damage: int):
         if self.hit_count == 0:
             self.hp -= damage
         self.hit_count = 0
         self.hit = True
         
-    def move(self, dx, dy):
+    def move(self, dx: int|float, dy: int|float):
         if not self.dead:
-            self.rect.x += dx
-            self.hitbox.x += dx
-            self.attackbox.x += dx
+            self.rect.x += int(dx)
+            self.hitbox.x += int(dx)
+            self.attackbox.x += int(dx)
             
-        self.rect.y += dy
-        self.hitbox.y += dy
-        self.attackbox.y += dy
+        self.rect.y += int(dy)
+        self.hitbox.y += int(dy)
+        self.attackbox.y += int(dy)
 
-    def move_right(self, vel):
+    def move_right(self, vel: int|float):
         if self.hitbox.right >= sett.WIDHT:
             self.x_vel = 0
         else:
@@ -275,7 +275,7 @@ class Player(pygame.sprite.Sprite):
             self.attackbox.bottomleft = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
         
-    def move_left(self, vel):
+    def move_left(self, vel: int|float):
         if self.hitbox.left <= 0:
             self.x_vel = 0
         else:
@@ -285,19 +285,19 @@ class Player(pygame.sprite.Sprite):
             self.attackbox.bottomright = (self.hitbox.centerx, self.hitbox.bottom)
             self.animation_count = 0
 
-    def flip(self, sprites):
+    def flip(self, sprites: list[pygame.Surface]) -> list[pygame.Surface]:
         return [pygame.transform.flip(sprite, True, False) for sprite in sprites]
 
-    def load_sprite_sheets(self, character, width, height, direction=False):
+    def load_sprite_sheets(self, character: str, width: int, height: int, direction: bool = False) -> dict[str, list[pygame.Surface]]:
         path = os.path.join("Assets", character, "Sprites")
         images = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
-        all_sprites = {}
+        all_sprites: dict[str, list[pygame.Surface]] = {}
 
         for image in images:
             sprite_sheet = pygame.image.load(os.path.join(path, image)).convert_alpha()
 
-            sprites = []
+            sprites: list[pygame.Surface] = []
 
             for i in range(sprite_sheet.get_width() // width):
                 surface = pygame.Surface((width, height), pygame.SRCALPHA, 32)
@@ -313,5 +313,5 @@ class Player(pygame.sprite.Sprite):
 
         return all_sprites
     
-    def reset(self, name: str, x: int, y: int,  width: int, height: int, direction = "right"):
+    def reset(self, name: str, x: int, y: int,  width: int, height: int, direction: str = "right"):
         self.__init__(name, x, y, width, height, direction)
