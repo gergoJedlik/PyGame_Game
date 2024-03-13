@@ -18,7 +18,7 @@ def main() -> None:
     UI_Elements = get_UI(player1, player2)
 
     level = Level(sett.LEVEL_MAP_STR)
-    floor = level.get_objects
+    floor: list[Tile] = level.get_objects
 
     bg_dict = get_background()
     menu_dict = menu()
@@ -85,7 +85,7 @@ def main() -> None:
 def menu() -> dict[str, Text]:
     menu_dict: dict[str, Text] = {}
 
-    title_text: Text = Text(128, "Blades of Destiny", (255, 192, 0), True)
+    title_text: Text = Text(128, "Blades of Destiny", pygame.Color(255, 192, 0), True)
     title_text.align("center", "center")
     menu_dict["game name"] = title_text
 
@@ -96,7 +96,7 @@ def menu() -> dict[str, Text]:
     return menu_dict
 
 def get_UI(player1: Player, player2: Player) -> dict[str, Healthbar|Display_Name]:
-    UI_Elements: dict[str, Healthbar] = {}
+    UI_Elements: dict[str, Healthbar|Display_Name] = {}
 
     player1_healthbar: Healthbar = Healthbar(47, 67, 366, 31, player1)
     UI_Elements["player1 healthbar"] = player1_healthbar
@@ -113,7 +113,7 @@ def get_UI(player1: Player, player2: Player) -> dict[str, Healthbar|Display_Name
         
 
 def get_background() -> dict[str, Img]:
-    bg_dict = {}
+    bg_dict: dict[str, Img] = {}
 
     background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
     bg_dict["background"] = background
@@ -129,7 +129,7 @@ def get_background() -> dict[str, Img]:
         bg_dict[f"grass_{placement}"] = bg_grass
     return bg_dict
 
-def new_game(player1: Player, player2: Player, win):
+def new_game(player1: Player, player2: Player, win: str|None):
     if win:
         player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
         player2.reset("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
@@ -185,8 +185,8 @@ def handle_hit(player1: Player, player2: Player):
             player1.knockback(player2.direction)
             
 
-def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy, p2_dy):
-    collided_objs = []
+def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy: int|float, p2_dy: int|float):
+    collided_objs: list[Tile] = []
     for obj in objects:
         if pygame.Rect.colliderect(player1.hitbox, obj.collidebox):
             if p1_dy > 0:
@@ -207,7 +207,7 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             collided_objs.append(obj)
             
 
-def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor, winner = None):
+def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: list[Tile], winner: None|str = None):
     for value in bg_dict.values():
         value.draw(screen)
 
@@ -222,13 +222,13 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
 
 
     # SHOW HITBOXES
-       # pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
+    #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
     # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
     # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
     # if player1.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
+    #     pygame.draw.rect(screen, (255, 0, 0), player1.attackbox, 3)
     # if player2.attackbox_active:
-    # pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
+    #     pygame.draw.rect(screen, (255, 0, 0), player2.attackbox, 3)
     
     player1.draw(screen)
     player2.draw(screen)
@@ -237,7 +237,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         for element in ui_elements.values():
             element.draw(screen)
     else:
-        winner_text: Text = Text(96, winner + " WON!", (255, 192, 0))
+        winner_text: Text = Text(96, winner + " WON!", pygame.Color(255, 192, 0))
         winner_text.align("center", "center")
 
         sub_text: Text = Text(32, "but their fight never ends...", thin=True)
