@@ -27,6 +27,7 @@ def main() -> None:
     menu_dict = get_menu()
 
 
+    blink = 0
     active: bool = False
     win: None|str = None
     running = True
