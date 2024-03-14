@@ -25,6 +25,7 @@ def main() -> None:
     bg_dict = get_background()
     menu_dict = menu()
 
+    blink = 0
     active: bool = False
     win: None|str = None
     running = True
@@ -75,8 +76,16 @@ def main() -> None:
                     if event.key == pygame.K_SPACE:
                         active, win = new_game(player1, player2, win, secret)
 
-            screen.fill((0, 0, 0))
-            for value in menu_dict.values():
+            for key, value in menu_dict.items():
+                if key == 'press to play':
+                    blink += 1
+                    if blink == 120:
+                        value.__init__(32, "PRESS 'SPACE' TO PLAY", (169, 169, 169))
+                        value.align("center", (sett.HEIGHT//10)*9)
+                    elif blink == 240:
+                        value.__init__(32, "PRESS 'SPACE' TO PLAY")
+                        value.align("center", (sett.HEIGHT//10)*9)
+                        blink = 0
                 value.draw(screen)
 
             pygame.display.update()
@@ -84,8 +93,14 @@ def main() -> None:
     pygame.quit()
     
 
-def menu() -> dict[str, Text]:
+def menu() -> dict[str, Text|Img]:
     menu_dict: dict[str, Text] = {}
+
+    background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
+    menu_dict["background"] = background
+
+    bg_building: Img = Img(sett.WIDHT//2, sett.HEIGHT//2+75, os.path.join("Assets", "Tileset", "Background_1.png"), (sett.WIDHT, sett.HEIGHT), True) 
+    menu_dict["building"] = bg_building
 
     title_text: Text = Text(128, "Blades of Destiny", pygame.Color(255, 192, 0), True)
     title_text.align("center", "center")
