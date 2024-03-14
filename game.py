@@ -3,6 +3,7 @@ import settings as sett
 from player import Player
 from tiles import Tile, Level
 from ui import Healthbar, Display_Name, Text, Img
+from bredket import Bredket
 import os
 
 pygame.init()
@@ -14,6 +15,7 @@ def main() -> None:
     
     player1: Player = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
     player2: Player = Player("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
+    secret: Bredket = Bredket(sett.WIDHT, sett.HEIGHT)
 
     UI_Elements = get_UI(player1, player2)
 
@@ -30,7 +32,7 @@ def main() -> None:
 
         if active is True:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT and not player1.P_dead and not player2.P_dead:
                     running = False
                 if event.type == pygame.KEYDOWN and not win:
                     if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
@@ -47,7 +49,7 @@ def main() -> None:
                         player2.dash()
                 elif event.type == pygame.KEYDOWN and win:
                     if event.key == pygame.K_SPACE:
-                        active, win = new_game(player1, player2, win)
+                        active, win = new_game(player1, player2, win, secret)
 
 
             player1.loop(sett.FPS)
@@ -62,7 +64,7 @@ def main() -> None:
 
             win = check_end(player1, player2)
 
-            update(screen, bg_dict, player1, player2, UI_Elements, floor, win)
+            update(screen, bg_dict, player1, player2, UI_Elements, floor, secret, win)
 
             clock.tick(sett.FPS)
         else:
@@ -71,7 +73,7 @@ def main() -> None:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        active, win = new_game(player1, player2, win)
+                        active, win = new_game(player1, player2, win, secret)
 
             screen.fill((0, 0, 0))
             for value in menu_dict.values():
@@ -129,11 +131,12 @@ def get_background() -> dict[str, Img]:
         bg_dict[f"grass_{placement}"] = bg_grass
     return bg_dict
 
-def new_game(player1: Player, player2: Player, win: str|None):
+def new_game(player1: Player, player2: Player, win: str|None, secret: Bredket):
     if win:
         player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
         player2.reset("Samurai", 900, sett.HEIGHT-400, 200, 189, "left")
 
+    secret.scale = 0
     active = True
     win = None
     return active, win
@@ -207,7 +210,7 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             collided_objs.append(obj)
             
 
-def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: list[Tile], winner: None|str = None):
+def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: list[Tile], secret: Bredket, winner: None|str = None):
     for value in bg_dict.values():
         value.draw(screen)
 
@@ -237,17 +240,23 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         for element in ui_elements.values():
             element.draw(screen)
     else:
-        winner_text: Text = Text(96, winner + " WON!", pygame.Color(255, 192, 0))
-        winner_text.align("center", "center")
+        if player1.P_dead and player2.P_dead:
+            secret.scalce_up()
+            secret.draw(screen)
+            if secret.scale == 150:
+                quit()
+        else:
+            winner_text: Text = Text(96, winner + " WON!", pygame.Color(255, 192, 0))
+            winner_text.align("center", "center")
 
-        sub_text: Text = Text(32, " but their fight never ends...", thin=True)
-        sub_text.align("center", winner_text.textRect.bottom+20)
+            sub_text: Text = Text(32, " but their fight never ends...", thin=True)
+            sub_text.align("center", winner_text.textRect.bottom+20)
 
-        restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
-        restart_text.align("center", (sett.HEIGHT//10)*9)
+            restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
+            restart_text.align("center", (sett.HEIGHT//10)*9)
 
-        winner_text.draw(screen)
-        sub_text.draw(screen)
-        restart_text.draw(screen)
+            winner_text.draw(screen)
+            sub_text.draw(screen)
+            restart_text.draw(screen)
 
     pygame.display.update()
