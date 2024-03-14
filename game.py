@@ -249,7 +249,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
             winner_text: Text = Text(96, winner + " WON!", pygame.Color(255, 192, 0))
             winner_text.align("center", "center")
 
-            sub_text: Text = Text(32, " but their fight never ends...", thin=True)
+            sub_text: Text = Text(32, "but their fight never ends...", thin=True)
             sub_text.align("center", winner_text.textRect.bottom+20)
 
             restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
