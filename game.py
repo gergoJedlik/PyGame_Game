@@ -82,6 +82,8 @@ def main() -> None:
             for key, value in menu_dict.items():
                 if key == 'press to play' and type(value) == Text:
                     value.blink()
+                if key == 'press to play' and type(value) == Text:
+                    value.blink()
                 value.draw(screen)
 
             pygame.display.update()
@@ -89,11 +91,8 @@ def main() -> None:
     pygame.quit()
 
 
-
-
-# UI And Menu Methods/Functions
 def get_menu() -> dict[str, Text|Img]:
-    menu_dict: dict[str, Text|Img] = {}
+    menu_dict: dict[str, Text] = {}
 
     background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
     menu_dict["background"] = background
