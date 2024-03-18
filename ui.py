@@ -38,6 +38,8 @@ class Text:
     def __init__(self, font_size: int, text: str, color: pygame.Color = pygame.Color(255, 255, 255), thin: bool = False) -> None:
         self.color = color
         self.string = text
+        self.blink_count = 0
+
         if thin:
             self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco-Thin.ttf"), font_size)
         else:
@@ -78,6 +80,15 @@ class Text:
                 self.textRect.bottom = int(y)
             elif y_alignment_point == "center":
                 self.textRect.centery = int(y)
+
+    def blink(self) -> None:
+        if self.blink_count == 90:
+            self.text: pygame.Surface = self.font.render(self.string, True, pygame.Color((120, 120, 120)), None)
+        if self.blink_count == 180:
+            self.text: pygame.Surface = self.font.render(self.string, True, self.color, None)
+            self.blink_count = 0
+        self.blink_count += 1
+
 
 
 class Display_Name(Text):
