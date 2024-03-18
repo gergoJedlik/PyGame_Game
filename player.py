@@ -72,7 +72,9 @@ class Player(pygame.sprite.Sprite):
 
     def loop(self, fps: int):
         self.check_hp()
-    
+        if self.name == "Samurai":
+            self.hp -= 2
+
         if not self.P_dash:
             self.y_vel += min(18, (self.fall_count / 3) * self.GRAV)
         self.move(self.x_vel, self.y_vel)

@@ -13,7 +13,7 @@ class Bredket():
 
     def scalce_up(self) -> None:
         self.scale += 1
-        self.Bredket_img= Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "bredket.png"), (self.width*(self.scale/100), self.height*(self.scale/100)), True)
+        self.Bredket_img= Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "bredket.png"), (int(self.width*(self.scale/100)), int(self.height*(self.scale/100))), True)
 
     def draw(self, screen: pygame.Surface) -> None:
         self.Bredket_img.draw(screen)

@@ -25,7 +25,7 @@ def main() -> None:
     bg_dict = get_background()
     menu_dict = menu()
 
-    blink = 0
+
     active: bool = False
     win: None|str = None
     running = True
@@ -49,7 +49,7 @@ def main() -> None:
                     if event.key == pygame.K_MINUS  and not player2.P_attack  and player2.dash_cd == 0 and not player2.dead:
                         player2.dash()
                 elif event.type == pygame.KEYDOWN and win:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_ESCAPE:
                         active, win = new_game(player1, player2, win, secret)
 
 
@@ -60,12 +60,14 @@ def main() -> None:
             handle_vertical_collision(player1, player2, floor, player1.y_vel, player2.y_vel)
             if not win:
                 handle_movement(player1, player2)
+                
 
             handle_hit(player1, player2)
 
             win = check_end(player1, player2)
 
             update(screen, bg_dict, player1, player2, UI_Elements, floor, secret, win)
+                
 
             clock.tick(sett.FPS)
         else:
@@ -77,15 +79,8 @@ def main() -> None:
                         active, win = new_game(player1, player2, win, secret)
 
             for key, value in menu_dict.items():
-                if key == 'press to play':
-                    blink += 1
-                    if blink == 120:
-                        value.__init__(32, "PRESS 'SPACE' TO PLAY", (169, 169, 169))
-                        value.align("center", (sett.HEIGHT//10)*9)
-                    elif blink == 240:
-                        value.__init__(32, "PRESS 'SPACE' TO PLAY")
-                        value.align("center", (sett.HEIGHT//10)*9)
-                        blink = 0
+                if key == 'press to play' and type(value) == Text:
+                    value.blink()
                 value.draw(screen)
 
             pygame.display.update()
@@ -94,7 +89,7 @@ def main() -> None:
     
 
 def menu() -> dict[str, Text|Img]:
-    menu_dict: dict[str, Text] = {}
+    menu_dict: dict[str, Text|Img] = {}
 
     background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
     menu_dict["background"] = background
@@ -145,6 +140,24 @@ def get_background() -> dict[str, Img]:
             bg_grass: Img = Img(352*placement, sett.HEIGHT+30, os.path.join("Assets", "Tileset", "Grass_background_1.png"), transparent=True, left=True)
         bg_dict[f"grass_{placement}"] = bg_grass
     return bg_dict
+
+def get_winscreen(winner: str) -> dict[str, Text]:
+    winsc_dict: dict[str, Text] = {}
+
+    winner_text: Text = Text(96, winner + " WON!", pygame.Color(255, 192, 0))
+    winner_text.align("center", "center")
+    winsc_dict["winner text"] = winner_text
+
+    sub_text: Text = Text(32, "but their fight never ends...", thin=True)
+    sub_text.align("center", winner_text.textRect.bottom+20)
+    winsc_dict["sub text"] = sub_text
+
+    restart_text: Text = Text(32, "PRESS 'ESC' TO RESTART")
+    restart_text.align("center", (sett.HEIGHT//10)*9)
+    winsc_dict["restart text"] = restart_text
+    return winsc_dict
+
+
 
 def new_game(player1: Player, player2: Player, win: str|None, secret: Bredket):
     if win:
@@ -223,6 +236,18 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
                 player2.hit_head()
             
             collided_objs.append(obj)
+
+def blit_win(screen: pygame.Surface, win_sc_dict: dict[str, Text], win: str):
+    for key, value in win_sc_dict.items():
+        if key == "restart text":
+            value.blink()
+        value.draw(screen)
+
+def secret_seq(screen: pygame.Surface, secret: Bredket):
+    secret.scalce_up()
+    secret.draw(screen)
+    if secret.scale == 150:
+         quit()
             
 
 def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: list[Tile], secret: Bredket, winner: None|str = None):
@@ -256,22 +281,10 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
             element.draw(screen)
     else:
         if player1.P_dead and player2.P_dead:
-            secret.scalce_up()
-            secret.draw(screen)
-            if secret.scale == 150:
-                quit()
+            secret_seq(screen, secret)
         else:
-            winner_text: Text = Text(96, winner + " WON!", pygame.Color(255, 192, 0))
-            winner_text.align("center", "center")
-
-            sub_text: Text = Text(32, "but their fight never ends...", thin=True)
-            sub_text.align("center", winner_text.textRect.bottom+20)
-
-            restart_text: Text = Text(32, "PRESS 'SPACE' TO RESTART")
-            restart_text.align("center", (sett.HEIGHT//10)*9)
-
-            winner_text.draw(screen)
-            sub_text.draw(screen)
-            restart_text.draw(screen)
+            win_sc_dict: dict[str, Text] = get_winscreen(winner)
+            blit_win(screen, win_sc_dict, winner)
+            
 
     pygame.display.update()
