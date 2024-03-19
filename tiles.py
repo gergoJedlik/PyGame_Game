@@ -15,12 +15,13 @@ class Object(pygame.sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 class Tile(Object):
-    def __init__(self, x: int, y: int, width: int, height: int) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int, columb: bool = False) -> None:
         super().__init__(x, y, width, height)
+        self.columb = columb
         block = self.get_block(width, height)
         self.image.blit(block, (0, 0))
         self.mask = pygame.mask.from_surface(self.image)
-        self.collidebox = pygame.Rect(x, y, width, height//2)
+        self.collidebox = pygame.Rect(x, y, width, 64)
         self.collidebox.bottomleft = self.rect.bottomleft
         self.coordinates: tuple[int, int] = (x, y)
 
@@ -28,7 +29,10 @@ class Tile(Object):
         path = os.path.join('Assets', 'Tileset', 'Tiles.png')
         image = pygame.image.load(path).convert_alpha()
         surface = pygame.Surface((x, y), pygame.SRCALPHA)
-        rect = pygame.Rect(128, 0, x, y)
+        if not self.columb:
+            rect = pygame.Rect(128, 0, x, y)
+        else:
+            rect = pygame.Rect(224, 32, x, y)
         surface.blit(image, (0, 0), rect)
         return pygame.transform.scale2x(surface)
     
@@ -44,7 +48,10 @@ class Level:
             for letter_index, letter in enumerate(line):
                 if letter == "x":
                     self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
-
+                if letter == "f":
+                    self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_WIDTH, sett.TILE_WIDTH * line_index), sett.TILE_WIDTH, sett.TILE_WIDTH, columb=True))
+                if letter == "p":
+                    pass
     @property
     def get_objects(self) -> list[Tile]:
         return self.objects
