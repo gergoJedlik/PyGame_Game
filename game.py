@@ -23,7 +23,7 @@ def main() -> None:
     floor: list[Tile] = level.get_objects
 
     bg_dict = get_background()
-    menu_dict = menu()
+    menu_dict = get_menu()
 
 
     active: bool = False
@@ -33,7 +33,7 @@ def main() -> None:
 
         if active is True:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT and not player1.P_dead and not player2.P_dead:
+                if event.type == pygame.QUIT and (not player1.P_dead or not player2.P_dead):
                     running = False
                 if event.type == pygame.KEYDOWN and not win:
                     if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
@@ -86,9 +86,12 @@ def main() -> None:
             pygame.display.update()
             
     pygame.quit()
-    
 
-def menu() -> dict[str, Text|Img]:
+
+
+
+# UI And Menu Methods/Functions
+def get_menu() -> dict[str, Text|Img]:
     menu_dict: dict[str, Text|Img] = {}
 
     background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
@@ -122,7 +125,6 @@ def get_UI(player1: Player, player2: Player) -> dict[str, Healthbar|Display_Name
     player2_displayname: Display_Name = Display_Name("Samurai", player2_healthbar)
     UI_Elements["player2 name"] = player2_displayname
     return UI_Elements
-        
 
 def get_background() -> dict[str, Img]:
     bg_dict: dict[str, Img] = {}
@@ -157,8 +159,19 @@ def get_winscreen(winner: str) -> dict[str, Text]:
     winsc_dict["restart text"] = restart_text
     return winsc_dict
 
+def blit_win(screen: pygame.Surface, win_sc_dict: dict[str, Text], win: str):
+    for key, value in win_sc_dict.items():
+        if key == "restart text":
+            value.blink()
+        value.draw(screen)
 
+def secret_seq(screen: pygame.Surface, secret: Bredket):
+    secret.scalce_up()
+    secret.draw(screen)
+    if secret.scale == 150:
+         quit()
 
+# End and New Game Methods/Functions
 def new_game(player1: Player, player2: Player, win: str|None, secret: Bredket):
     if win:
         player1.reset("Huntress", 30, sett.HEIGHT-400, 150, 150)
@@ -176,6 +189,7 @@ def check_end(player1: Player, player2: Player) -> str|None:
         return player1.name.upper()
     return None
 
+# Game and Player Handling Methods
 def handle_movement(player1: Player, player2: Player):
     keys = pygame.key.get_pressed()
 
@@ -201,7 +215,6 @@ def handle_movement(player1: Player, player2: Player):
         if (keys[pygame.K_RIGHT]):
             player2.move_right(sett.PLAYER_VEL_2)
 
-
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
         if player1.attackbox.colliderect(player2.hitbox):
@@ -214,7 +227,6 @@ def handle_hit(player1: Player, player2: Player):
             if not player1.hit:
                 player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
-            
 
 def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy: int|float, p2_dy: int|float):
     collided_objs: list[Tile] = []
@@ -237,19 +249,7 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: list[Ti
             
             collided_objs.append(obj)
 
-def blit_win(screen: pygame.Surface, win_sc_dict: dict[str, Text], win: str):
-    for key, value in win_sc_dict.items():
-        if key == "restart text":
-            value.blink()
-        value.draw(screen)
-
-def secret_seq(screen: pygame.Surface, secret: Bredket):
-    secret.scalce_up()
-    secret.draw(screen)
-    if secret.scale == 150:
-         quit()
-            
-
+# Screen Update Method
 def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: list[Tile], secret: Bredket, winner: None|str = None):
     for value in bg_dict.values():
         value.draw(screen)
