@@ -82,6 +82,7 @@ class Player(pygame.sprite.Sprite):
         """
         self.check_hp()
 
+        
         if not self.P_dash:
             self.y_vel += min(18, (self.fall_count / 3) * self.GRAV)
         self.move(self.x_vel, self.y_vel)

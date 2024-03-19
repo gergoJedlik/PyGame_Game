@@ -235,7 +235,6 @@ def handle_hit(player1: Player, player2: Player):
             if not player1.hit:
                 player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
-            
 
 # Screen Update Method
 def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: dict[str, Tile|Platform], secret: Bredket, winner: None|str = None):
