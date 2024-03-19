@@ -265,7 +265,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
 
 
     # SHOW HITBOXES
-    #     pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
+        pygame.draw.rect(screen, (0, 0, 255), obj.collidebox, 5)
     # pygame.draw.rect(screen, (0, 255, 0), player1.hitbox, 3)
     # pygame.draw.rect(screen, (0, 255, 0), player2.hitbox, 3)
     # if player1.attackbox_active:
