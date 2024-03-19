@@ -73,8 +73,6 @@ class Player(pygame.sprite.Sprite):
         self.hp = 360
         
 
-        
-
     def loop(self, fps: int):
         """Loop functions of player class:
             provides basic player functions and actions.
