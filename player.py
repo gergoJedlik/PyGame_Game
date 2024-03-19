@@ -66,8 +66,12 @@ class Player(pygame.sprite.Sprite):
         self.death_count = 0
         self.P_dead = False
 
+        if self.name == "Huntress":
+            self.dmg = 52
+        else:
+            self.dmg = 45
         self.hp = 360
-        self.dmg = 45
+        
 
         
 
