@@ -68,12 +68,15 @@ class Player(pygame.sprite.Sprite):
 
         
 
-
-
     def loop(self, fps: int):
+        """Loop functions of player class:
+            provides basic player functions and actions.
+
+        Args:
+            fps (int): Iteratons per second of pygame loop
+        """
         self.check_hp()
 
-        
         if not self.P_dash:
             self.y_vel += min(18, (self.fall_count / 3) * self.GRAV)
         self.move(self.x_vel, self.y_vel)
@@ -115,7 +118,6 @@ class Player(pygame.sprite.Sprite):
             self.jump_force = -self.GRAV * 21
             
     def dash(self):
-        
         if self.dash_count > 0:
             self.P_dash = True
             
@@ -138,7 +140,6 @@ class Player(pygame.sprite.Sprite):
             self.dash_cd = 90
             self.dash_count = 5 * self.ANIMATION_DELAY
             self.jump_force = -self.GRAV * 19    
-  
 
     def knockback(self, enemy_dir: None|str = None) -> None:
         self.P_knockback = True
@@ -158,13 +159,13 @@ class Player(pygame.sprite.Sprite):
             self.P_knockback = False
             self.knockback_force = sett.PLAYER_VEL_1 * 5
 
-            
-
     def check_hp(self) -> None:
         if self.hp <= 0:
             self.dead = True
 
     def update_sprite(self) -> None:
+        """Updates currently playing animation.
+        """
         attack1_ended = False
         if self.dead:
             self.sprite_sheet = 'Death'
@@ -201,11 +202,8 @@ class Player(pygame.sprite.Sprite):
                 attack1_ended = True
             self.animation_count = 0
             
-
         self.prev_sprite_sheet = self.sprite_sheet
 
-        
-    
         sprite_sheet_name = self.sprite_sheet + "_" + self.direction
         sprites = self.SPRITES[sprite_sheet_name]
         if not self.dead:
@@ -290,6 +288,17 @@ class Player(pygame.sprite.Sprite):
         return [pygame.transform.flip(sprite, True, False) for sprite in sprites]
 
     def load_sprite_sheets(self, character: str, width: int, height: int, direction: bool = False) -> dict[str, list[pygame.Surface]]:
+        """Cuts and loads all spritesheets in given directory then saves it to a dict.
+
+        Args:
+            character (str): Name of the character.
+            width (int): Width of a single sprite in spritesheet.
+            height (int): Hight of a single sprite in spritesheet.
+            direction (bool, optional): True if both right and left varients are needed. Defaults to False.
+
+        Returns:
+            dict[str, list[pygame.Surface]]: Dict with key of animation_direction and value of list with animation frames.
+        """
         path = os.path.join("Assets", character, "Sprites")
         images = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
