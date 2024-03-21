@@ -59,7 +59,7 @@ def main() -> None:
 
             handle_vertical_collision(player1, player2, floor, player1.y_vel, player2.y_vel)
             if not win:
-                handle_movement(player1, player2)
+                handle_movement(player1, player2, floor)
                 
 
             handle_hit(player1, player2)
@@ -190,29 +190,34 @@ def check_end(player1: Player, player2: Player) -> str|None:
     return None
 
 # Game and Player Handling Methods
-def handle_movement(player1: Player, player2: Player):
+def handle_movement(player1: Player, player2: Player, objects: dict[str, Tile|Platform]):
     keys = pygame.key.get_pressed()
 
     if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
     if not player1.P_jump:
         player1.y_vel = 0
+    h_collide_left = collide(player1, objects, sett.PLAYER_VEL_1 * -2)
+    h_collide_right = collide(player1, objects, sett.PLAYER_VEL_1 * 2)
+
 
     if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
+    s_collide_left = collide(player2, objects, sett.PLAYER_VEL_1 * -2)
+    s_collide_right = collide(player2, objects, sett.PLAYER_VEL_1 * 2)
 
     if not player1.hit and not player1.P_attack and not player1.P_dash:
-        if (keys[pygame.K_a]):
+        if (keys[pygame.K_a]) and not h_collide_left:
             player1.move_left(sett.PLAYER_VEL_1)
-        if (keys[pygame.K_d]):
+        if (keys[pygame.K_d]) and not h_collide_right:
             player1.move_right(sett.PLAYER_VEL_1)
 
     if not player2.hit and not player2.P_attack and not player2.P_dash:
-        if (keys[pygame.K_LEFT]):
+        if (keys[pygame.K_LEFT]) and not s_collide_left:
             player2.move_left(sett.PLAYER_VEL_2)
-        if (keys[pygame.K_RIGHT]):
+        if (keys[pygame.K_RIGHT]) and not s_collide_right:
             player2.move_right(sett.PLAYER_VEL_2)
 
 def handle_hit(player1: Player, player2: Player):
@@ -227,6 +232,19 @@ def handle_hit(player1: Player, player2: Player):
             if not player1.hit:
                 player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
+
+def collide(player: Player, objects: dict[str, Tile|Platform], dx: int|float):
+    player.move(dx, 0)
+    player.update()
+    collided_object = None
+    for obj in objects.values():
+        if pygame.Rect.colliderect(player.hitbox, obj.collidebox):
+            collided_object = obj
+            break
+
+    player.move(-dx, 0)
+    player.update()
+    return collided_object
 
 def handle_vertical_collision(player1: Player, player2: Player, objects: dict[str, Tile|Platform], p1_dy: int|float, p2_dy: int|float):
     collided_objs: list[Tile] = []

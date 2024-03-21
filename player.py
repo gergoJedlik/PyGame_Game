@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.P_jump = False
         self.jump_count = 0
-        self.jump_force = -self.GRAV * 21
+        self.jump_force = -self.GRAV * 22
         
         self.P_dash = False
         self.dash_count = 5 * self.ANIMATION_DELAY
@@ -117,7 +117,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
         else:
             self.P_jump = False
-            self.jump_force = -self.GRAV * 21
+            self.jump_force = -self.GRAV * 22
 
     def climb_platform(self, platform: Platform):
         if pygame.Rect.colliderect(self.hitbox, platform.collidebox) and self.y_vel > 0:
@@ -147,7 +147,7 @@ class Player(pygame.sprite.Sprite):
             self.P_dash = False
             self.dash_cd = 90
             self.dash_count = 5 * self.ANIMATION_DELAY
-            self.jump_force = -self.GRAV * 19    
+            self.jump_force = -self.GRAV * 22    
 
     def knockback(self, enemy_dir: None|str = None) -> None:
         self.P_knockback = True
@@ -251,7 +251,7 @@ class Player(pygame.sprite.Sprite):
 
     def hit_head(self):
         self.P_jump = False
-        self.jump_force = -self.GRAV * 21
+        self.jump_force = -self.GRAV * 22
         self.count = 0
         self.y_vel *= -1
 
