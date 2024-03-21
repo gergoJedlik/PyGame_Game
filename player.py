@@ -1,6 +1,7 @@
 import pygame
 import settings as sett
 import os
+from tiles import Platform
 
 
 class Player(pygame.sprite.Sprite):
@@ -92,6 +93,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.P_jump:
             self.jump()
+
               
         if self.P_dash and self.dash_cd == 0:
             self.dash()
@@ -116,6 +118,12 @@ class Player(pygame.sprite.Sprite):
         else:
             self.P_jump = False
             self.jump_force = -self.GRAV * 21
+
+    def climb_platform(self, platform: Platform):
+        if pygame.Rect.colliderect(self.hitbox, platform.collidebox) and self.y_vel > 0:
+            self.rect.bottom = platform.collidebox.top
+            self.hitbox.bottom = platform.collidebox.top
+            self.attackbox.bottom = platform.collidebox.top
             
     def dash(self):
         if self.dash_count > 0:

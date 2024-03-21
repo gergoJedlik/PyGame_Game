@@ -1,7 +1,7 @@
 import pygame
 import settings as sett
 from player import Player
-from tiles import Tile, Level, Platfrom
+from tiles import Tile, Level, Platform
 from ui import Healthbar, Display_Name, Text, Img
 from bredket import Bredket
 import os
@@ -20,7 +20,7 @@ def main() -> None:
     UI_Elements = get_UI(player1, player2)
 
     level = Level(sett.LEVEL_MAP_STR)
-    floor: dict[str, Tile|Platfrom] = level.get_objects
+    floor: dict[str, Tile|Platform] = level.get_objects
 
     bg_dict = get_background()
     menu_dict = get_menu()
@@ -228,29 +228,33 @@ def handle_hit(player1: Player, player2: Player):
                 player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
 
-def handle_vertical_collision(player1: Player, player2: Player, objects: dict[str, Tile|Platfrom], p1_dy: int|float, p2_dy: int|float):
+def handle_vertical_collision(player1: Player, player2: Player, objects: dict[str, Tile|Platform], p1_dy: int|float, p2_dy: int|float):
     collided_objs: list[Tile] = []
     for key, obj in objects.items():
         if pygame.Rect.colliderect(player1.hitbox, obj.collidebox):
             if p1_dy > 0:
                 player1.move(0, -p1_dy)
                 player1.landed()
-            elif p1_dy < 0:
+            elif p1_dy < 0 and not "platform" in key:
                 player1.move(0, p1_dy)
                 player1.hit_head()
+            elif p1_dy > 0 and "platform" in key:
+                player1.climb_platform(obj)
 
         if pygame.Rect.colliderect(player2.hitbox, obj.collidebox):
             if p2_dy > 0:
                 player2.move(0, -p2_dy)
                 player2.landed()
-            elif p2_dy < 0:
+            elif p2_dy < 0 and not "platform" in key:
                 player2.move(0, p2_dy)
                 player2.hit_head()
+            elif p2_dy > 0 and "platform" in key:
+                player2.climb_platform(obj)
             
             collided_objs.append(obj)
 
 # Screen Update Method
-def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: dict[str, Tile|Platfrom], secret: Bredket, winner: None|str = None):
+def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: dict[str, Tile|Platform], secret: Bredket, winner: None|str = None):
     for value in bg_dict.values():
         value.draw(screen)
 

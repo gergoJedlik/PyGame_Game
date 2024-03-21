@@ -40,7 +40,7 @@ class Tile(Object):
     def get_cords(self) -> tuple[int, int]:
         return self.coordinates
     
-class Platfrom(Object):
+class Platform(Object):
     def __init__(self, x: int, y: int, width: int, height: int, last: bool = False) -> None:
         if not last:
             super().__init__(x-width//2+34, y+35, width, height)
@@ -71,7 +71,7 @@ class Platfrom(Object):
     
 class Level:
     def __init__(self, lvl_map_str: list[str]) -> None:
-        self.objects: dict[str, Tile|Platfrom] = {}
+        self.objects: dict[str, Tile|Platform] = {}
         for line_index, line in enumerate(lvl_map_str):
             for letter_index, letter in enumerate(line):
                 if letter == "x":
@@ -81,14 +81,14 @@ class Level:
                     self.objects[f"tile_{line_index}_{letter_index}"] = Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_WIDTH, sett.TILE_WIDTH * line_index), sett.TILE_WIDTH, sett.TILE_WIDTH, columb=True)
                     #self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_WIDTH, sett.TILE_WIDTH * line_index), sett.TILE_WIDTH, sett.TILE_WIDTH, columb=True))
                 if letter == "p":
-                    self.objects[f"platform_{line_index}_{letter_index}"] = Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT)
+                    self.objects[f"platform_{line_index}_{letter_index}"] = Platform(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT)
                     #self.objects.append(Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
                 if letter == "P":
-                    self.objects[f"platform_{line_index}_{letter_index}"] = Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True)
+                    self.objects[f"platform_{line_index}_{letter_index}"] = Platform(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True)
                     #self.objects.append(Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True))
 
     @property
-    def get_objects(self) -> dict[str, Tile|Platfrom]:
+    def get_objects(self) -> dict[str, Tile|Platform]:
         return self.objects
 
         
