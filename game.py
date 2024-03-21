@@ -193,20 +193,20 @@ def check_end(player1: Player, player2: Player) -> str|None:
 def handle_movement(player1: Player, player2: Player, objects: dict[str, Tile|Platform]):
     keys = pygame.key.get_pressed()
 
+    h_collide_left, h_collide_right = collide(player1, objects, sett.PLAYER_VEL_1*2)
     if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
     if not player1.P_jump:
-        player1.y_vel = 0
-    h_collide_left = collide(player1, objects, sett.PLAYER_VEL_1 * -2)
-    h_collide_right = collide(player1, objects, sett.PLAYER_VEL_1 * 2)
+        player1.y_vel = 0 
 
-
+    s_collide_left, s_collide_right = collide(player2, objects, sett.PLAYER_VEL_1 *2)
     if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
-    s_collide_left = collide(player2, objects, sett.PLAYER_VEL_1 * -2)
-    s_collide_right = collide(player2, objects, sett.PLAYER_VEL_1 * 2)
+
+    print(s_collide_right, h_collide_right)
+    
 
     if not player1.hit and not player1.P_attack and not player1.P_dash:
         if (keys[pygame.K_a]) and not h_collide_left:
@@ -233,18 +233,27 @@ def handle_hit(player1: Player, player2: Player):
                 player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
 
-def collide(player: Player, objects: dict[str, Tile|Platform], dx: int|float):
+def collide(player: Player, objects: dict[str, Tile|Platform], dx: int|float) -> Tile|Platform|None: 
+    if dx == 0:
+        return None, None
     player.move(dx, 0)
     player.update()
-    collided_object = None
-    for obj in objects.values():
-        if pygame.Rect.colliderect(player.hitbox, obj.collidebox):
-            collided_object = obj
-            break
+    collided_object_r: Tile|Platform|None = None
+    collided_object_l: Tile|Platform|None = None
+    if dx > 0:
+        for obj in objects.values():
+            if pygame.Rect.colliderect(player.hitbox, obj.collidebox):
+                collided_object_r = obj
+                break
+    if dx < 0:
+        for obj in objects.values():
+            if pygame.Rect.colliderect(player.hitbox, obj.collidebox):
+                collided_object_l = obj
+                break
 
     player.move(-dx, 0)
     player.update()
-    return collided_object
+    return collided_object_l, collided_object_r
 
 def handle_vertical_collision(player1: Player, player2: Player, objects: dict[str, Tile|Platform], p1_dy: int|float, p2_dy: int|float):
     collided_objs: list[Tile] = []
