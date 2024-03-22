@@ -3,7 +3,7 @@ from tiles import Platform, Tile
 from player import Player
 
 
-def collide(player: Player, objects: dict[str, Tile|Platform], dx: int|float) -> Tile|Platform|None:
+def collide(player: Player, objects: dict[str, Tile|Platform], dx: int|float) -> tuple[Tile|Platform|None, Tile|Platform|None]:
     if dx == 0:
         return None, None
     player.move(dx, 0, test=True)
@@ -15,11 +15,15 @@ def collide(player: Player, objects: dict[str, Tile|Platform], dx: int|float) ->
             if pygame.Rect.colliderect(player.hitbox, obj.collidebox):
                 collided_object_l = obj
                 break
-    if dx < 0:
+    elif dx < 0:
         for obj in objects.values():
             if pygame.Rect.colliderect(player.hitbox, obj.collidebox):
                 collided_object_r = obj
                 break
+
+        player.move(-dx, 0, test=True)
+        player.update()
+        return collided_object_l, collided_object_r
 
     player.move(-dx, 0, test=True)
     player.update()
@@ -30,13 +34,16 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: dict[st
     for key, obj in objects.items():
         if pygame.Rect.colliderect(player1.hitbox, obj.collidebox):
             if p1_dy > 0:
-                player1.move(0, -p1_dy)
-                player1.landed()
+                if "platform" in key and player1.hitbox.bottom > obj.collidebox.top+10:
+                    pass
+                else:
+                    player1.move(0, -p1_dy)
+                    player1.landed()
             elif p1_dy < 0 and not "platform" in key:
+                print("trigger 2")
                 player1.move(0, p1_dy)
                 player1.hit_head()
-            elif p1_dy > 0 and "platform" in key:
-                player1.climb_platform(obj)
+                
 
         if pygame.Rect.colliderect(player2.hitbox, obj.collidebox):
             if p2_dy > 0:
@@ -46,4 +53,4 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: dict[st
                 player2.move(0, p2_dy)
                 player2.hit_head()
             elif p2_dy > 0 and "platform" in key:
-                player2.climb_platform(obj)
+                pass
