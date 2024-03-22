@@ -34,20 +34,19 @@ def handle_vertical_collision(player1: Player, player2: Player, objects: dict[st
     for key, obj in objects.items():
         if pygame.Rect.colliderect(player1.hitbox, obj.collidebox):
             if p1_dy > 0:
-                if "platform" in key and player1.hitbox.bottom > obj.collidebox.top+10:
+                if ("platform" in key and player1.hitbox.bottom > obj.collidebox.top+10) or ("platform" in key and player1.P_dismount):
                     pass
                 else:
                     player1.move(0, -p1_dy)
                     player1.landed()
             elif p1_dy < 0 and not "platform" in key:
-                print("trigger 2")
                 player1.move(0, p1_dy)
                 player1.hit_head()
                 
 
         if pygame.Rect.colliderect(player2.hitbox, obj.collidebox):
             if p2_dy > 0:
-                if "platform" in key and player2.hitbox.bottom > obj.collidebox.top+10:
+                if ("platform" in key and player2.hitbox.bottom > obj.collidebox.top+10) or ("platform" in key and player2.P_dismount):
                     pass
                 else:
                     player2.move(0, -p2_dy)

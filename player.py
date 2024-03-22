@@ -42,6 +42,8 @@ class Player(pygame.sprite.Sprite):
         self.dash_count = 5 * self.ANIMATION_DELAY
         self.dash_cd = 0
 
+        self.P_dismount = False
+
         self.knockback_force = sett.PLAYER_VEL_1 * 5
         self.P_knockback = False
         

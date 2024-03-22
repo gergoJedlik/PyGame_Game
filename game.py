@@ -193,31 +193,37 @@ def check_end(player1: Player, player2: Player) -> str|None:
 # Game and Player Handling Methods
 def handle_movement(player1: Player, player2: Player, objects: dict[str, Tile|Platform]):
     keys = pygame.key.get_pressed()
-    print(player1.current_vel)
+
     h_collide_left, h_collide_right = collide(player1, objects, player1.current_vel * 2)
     if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
     if not player1.P_jump:
         player1.y_vel = 0 
+    player1.P_dismount = False
 
     s_collide_left, s_collide_right = collide(player2, objects, player2.current_vel * 2)
     if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
-    
+    player2.P_dismount = False
+
 
     if not player1.hit and not player1.P_attack and not player1.P_dash:
         if (keys[pygame.K_a]) and not h_collide_right:
             player1.move_left(sett.PLAYER_VEL_1)
         if (keys[pygame.K_d]) and not h_collide_left:
             player1.move_right(sett.PLAYER_VEL_1)
+        if (keys[pygame.K_s]):
+            player1.P_dismount = True
 
     if not player2.hit and not player2.P_attack and not player2.P_dash:
         if (keys[pygame.K_LEFT]) and not s_collide_right:
             player2.move_left(sett.PLAYER_VEL_2)
         if (keys[pygame.K_RIGHT]) and not s_collide_left:
             player2.move_right(sett.PLAYER_VEL_2)
+        if (keys[pygame.K_DOWN]):
+            player2.P_dismount = True
 
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
