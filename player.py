@@ -1,7 +1,7 @@
 import pygame
 import settings as sett
 import os
-from tiles import Platform
+from tiles import Tile, Platform
 
 
 class Player(pygame.sprite.Sprite):
@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
             self.p1_hb_cord = self.hitbox.bottomleft 
 
         self.x_vel: int|float = 0
+        self.current_vel: int|float = 0
         self.y_vel: int|float = 0
         self.width = width
         self.height = height
@@ -264,7 +265,9 @@ class Player(pygame.sprite.Sprite):
         self.hit_count = 0
         self.hit = True
         
-    def move(self, dx: int|float, dy: int|float):
+    def move(self, dx: int|float, dy: int|float, test = False):
+        if dx != 0 and not test:
+            self.current_vel = dx
         if not self.dead:
             self.rect.x += int(dx)
             self.hitbox.x += int(dx)
@@ -335,3 +338,25 @@ class Player(pygame.sprite.Sprite):
     
     def reset(self, name: str, x: int, y: int,  width: int, height: int, direction: str = "right"):
         self.__init__(name, x, y, width, height, direction)
+        
+    def collide(self, objects: dict[str, Tile|Platform], dx: int|float) -> Tile|Platform|None:
+        if dx == 0:
+            return None, None
+        self.move(dx, 0, test=True)
+        self.update()
+        collided_object_r: Tile|Platform|None = None
+        collided_object_l: Tile|Platform|None = None
+        if dx > 0:
+            for obj in objects.values():
+                if pygame.Rect.colliderect(self.hitbox, obj.collidebox):
+                    collided_object_l = obj
+                    break
+        if dx < 0:
+            for obj in objects.values():
+                if pygame.Rect.colliderect(self.hitbox, obj.collidebox):
+                    collided_object_r = obj
+                    break
+
+        self.move(-dx, 0, test=True)
+        self.update()
+        return collided_object_l, collided_object_r
