@@ -33,6 +33,7 @@ class Tile(Object):
             rect = pygame.Rect(128, 0, x, y)
         else:
             rect = pygame.Rect(224, 32, x, y)
+            
         surface.blit(image, (0, 0), rect)
         return pygame.transform.scale2x(surface)
     
@@ -61,12 +62,6 @@ class Platform(Object):
         image = pygame.image.load(path).convert_alpha()
         surface = pygame.Surface((x, y), pygame.SRCALPHA)
         rect = pygame.Rect(65, 224, x, y)
-        surface.blit(image, (0, 0), rect)
-        return pygame.transform.scale2x(surface)
-    
-    @property
-    def get_cords(self) -> tuple[int, int]:
-        return self.coordinates
 
     
 class Level:
@@ -86,6 +81,7 @@ class Level:
                 if letter == "P":
                     self.objects[f"platform_{line_index}_{letter_index}"] = Platform(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True)
                     #self.objects.append(Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True))
+                    self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
 
     @property
     def get_objects(self) -> dict[str, Tile|Platform]:
