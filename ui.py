@@ -39,6 +39,7 @@ class Text:
         self.color = color
         self.string = text
         self.blink_count = 0
+ 
 
         if thin:
             self.font = pygame.font.Font(os.path.join("Assets", "DigitalDisco-Thin.ttf"), font_size)
