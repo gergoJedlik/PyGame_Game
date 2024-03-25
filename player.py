@@ -15,13 +15,14 @@ class Player(pygame.sprite.Sprite):
 
         self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
         if name == 'Huntress':
-            self.hitbox: pygame.Rect = pygame.Rect(x+width+8, y+height-13, 53, height*0.7)
+            self.hitbox: pygame.Rect = pygame.Rect(x+width+8, y+height-12, 53, height*0.7)
             self.p1_hb_cord = self.hitbox.bottomleft
         else:
-            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75)+10, y+(height*0.7)-2, 53, height*0.6)
+            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75)+10, y+(height*0.7)-3, 53, height*0.6)
             self.p1_hb_cord = self.hitbox.bottomleft 
 
         self.x_vel: int|float = 0
+        self.current_vel: int|float = 0
         self.y_vel: int|float = 0
         self.width = width
         self.height = height
@@ -35,11 +36,13 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.P_jump = False
         self.jump_count = 0
-        self.jump_force = -self.GRAV * 21
+        self.jump_force = -self.GRAV * 22
         
         self.P_dash = False
         self.dash_count = 5 * self.ANIMATION_DELAY
         self.dash_cd = 0
+
+        self.P_dismount = False
 
         self.knockback_force = sett.PLAYER_VEL_1 * 5
         self.P_knockback = False
@@ -92,6 +95,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.P_jump:
             self.jump()
+
               
         if self.P_dash and self.dash_cd == 0:
             self.dash()
@@ -115,7 +119,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_count += 1
         else:
             self.P_jump = False
-            self.jump_force = -self.GRAV * 21
+            self.jump_force = -self.GRAV * 22
             
     def dash(self):
         if self.dash_count > 0:
@@ -139,7 +143,7 @@ class Player(pygame.sprite.Sprite):
             self.P_dash = False
             self.dash_cd = 90
             self.dash_count = 5 * self.ANIMATION_DELAY
-            self.jump_force = -self.GRAV * 19    
+            self.jump_force = -self.GRAV * 22    
 
     def knockback(self, enemy_dir: None|str = None) -> None:
         self.P_knockback = True
@@ -240,8 +244,22 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.y_vel = 0
         self.jump_count = 0
+        self.P_dismount = False
+        
+    def place(self, x: int|None, y: int|None):
+        if x:
+            self.rect.centerx = x
+            self.hitbox.centerx = x
+            self.attackbox.centerx = x
+         
+        if y:       
+            self.rect.bottom = y+133
+            self.hitbox.bottom = y
+            self.attackbox.bottom = y
 
     def hit_head(self):
+        self.P_jump = False
+        self.jump_force = -self.GRAV * 22
         self.count = 0
         self.y_vel *= -1
 
@@ -254,7 +272,9 @@ class Player(pygame.sprite.Sprite):
         self.hit_count = 0
         self.hit = True
         
-    def move(self, dx: int|float, dy: int|float):
+    def move(self, dx: int|float, dy: int|float, test: bool = False):
+        if dx != 0 and not test:
+            self.current_vel = dx
         if not self.dead:
             self.rect.x += int(dx)
             self.hitbox.x += int(dx)
@@ -325,3 +345,4 @@ class Player(pygame.sprite.Sprite):
     
     def reset(self, name: str, x: int, y: int,  width: int, height: int, direction: str = "right"):
         self.__init__(name, x, y, width, height, direction)
+        

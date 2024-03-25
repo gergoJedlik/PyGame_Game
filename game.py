@@ -1,7 +1,8 @@
 import pygame
 import settings as sett
 from player import Player
-from tiles import Tile, Level
+from tiles import Tile, Level, Platform
+from collision import collide, handle_vertical_collision
 from ui import Healthbar, Display_Name, Text, Img
 from bredket import Bredket
 import os
@@ -20,7 +21,7 @@ def main() -> None:
     UI_Elements = get_UI(player1, player2)
 
     level = Level(sett.LEVEL_MAP_STR)
-    floor: list[Tile] = level.get_objects
+    all_tiles: dict[str, Tile|Platform] = level.get_objects
 
     bg_dict = get_background()
     menu_dict = get_menu()
@@ -56,17 +57,17 @@ def main() -> None:
             player1.loop(sett.FPS)
             player2.loop(sett.FPS)
 
-
-            handle_vertical_collision(player1, player2, floor, player1.y_vel, player2.y_vel)
+            
+            handle_vertical_collision(player1, player2, all_tiles, player1.y_vel, player2.y_vel)
             if not win:
-                handle_movement(player1, player2)
+                handle_movement(player1, player2, all_tiles)
                 
 
             handle_hit(player1, player2)
 
             win = check_end(player1, player2)
 
-            update(screen, bg_dict, player1, player2, UI_Elements, floor, secret, win)
+            update(screen, bg_dict, player1, player2, UI_Elements, all_tiles, secret, win)
                 
 
             clock.tick(sett.FPS)
@@ -190,30 +191,37 @@ def check_end(player1: Player, player2: Player) -> str|None:
     return None
 
 # Game and Player Handling Methods
-def handle_movement(player1: Player, player2: Player):
+def handle_movement(player1: Player, player2: Player, objects: dict[str, Tile|Platform]):
     keys = pygame.key.get_pressed()
 
+    h_collide_left, h_collide_right = collide(player1, objects, player1.current_vel * 2)
     if not player1.P_dash and not player1.P_knockback:
         player1.x_vel = 0
     if not player1.P_jump:
-        player1.y_vel = 0
+        player1.y_vel = 0 
 
+    s_collide_left, s_collide_right = collide(player2, objects, player2.current_vel * 2)
     if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
 
+
     if not player1.hit and not player1.P_attack and not player1.P_dash:
-        if (keys[pygame.K_a]):
+        if (keys[pygame.K_a]) and not h_collide_right:
             player1.move_left(sett.PLAYER_VEL_1)
-        if (keys[pygame.K_d]):
+        if (keys[pygame.K_d]) and not h_collide_left:
             player1.move_right(sett.PLAYER_VEL_1)
+        if (keys[pygame.K_s]):
+            player1.P_dismount = True
 
     if not player2.hit and not player2.P_attack and not player2.P_dash:
-        if (keys[pygame.K_LEFT]):
+        if (keys[pygame.K_LEFT]) and not s_collide_right:
             player2.move_left(sett.PLAYER_VEL_2)
-        if (keys[pygame.K_RIGHT]):
+        if (keys[pygame.K_RIGHT]) and not s_collide_left:
             player2.move_right(sett.PLAYER_VEL_2)
+        if (keys[pygame.K_DOWN]):
+            player2.P_dismount = True
 
 def handle_hit(player1: Player, player2: Player):
     if player1.attackbox_active:
@@ -227,30 +235,10 @@ def handle_hit(player1: Player, player2: Player):
             if not player1.hit:
                 player1.make_hit(player2.dmg)
             player1.knockback(player2.direction)
-
-def handle_vertical_collision(player1: Player, player2: Player, objects: list[Tile], p1_dy: int|float, p2_dy: int|float):
-    collided_objs: list[Tile] = []
-    for obj in objects:
-        if pygame.Rect.colliderect(player1.hitbox, obj.collidebox):
-            if p1_dy > 0:
-                player1.move(0, -p1_dy)
-                player1.landed()
-            elif p1_dy < 0:
-                player1.move(0, p1_dy)
-                player1.hit_head()
-
-        if pygame.Rect.colliderect(player2.hitbox, obj.collidebox):
-            if p2_dy > 0:
-                player2.move(0, -p2_dy)
-                player2.landed()
-            elif p2_dy < 0:
-                player2.move(0, p2_dy)
-                player2.hit_head()
             
-            collided_objs.append(obj)
 
 # Screen Update Method
-def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: list[Tile], secret: Bredket, winner: None|str = None):
+def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, player2: Player, ui_elements: dict[str, Healthbar|Display_Name], floor: dict[str, Tile|Platform], secret: Bredket, winner: None|str = None):
     for value in bg_dict.values():
         value.draw(screen)
 
@@ -260,7 +248,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
         if type(element) == Healthbar:
             element.update_width()
 
-    for obj in floor:
+    for obj in floor.values():
         obj.draw(screen)
 
 
