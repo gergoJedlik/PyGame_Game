@@ -244,6 +244,18 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.y_vel = 0
         self.jump_count = 0
+        self.P_dismount = False
+        
+    def place(self, x: int|None, y: int|None):
+        if x:
+            self.rect.centerx = x
+            self.hitbox.centerx = x
+            self.attackbox.centerx = x
+         
+        if y:       
+            self.rect.bottom = y
+            self.hitbox.bottom = y
+            self.attackbox.bottom = y
 
     def hit_head(self):
         self.P_jump = False

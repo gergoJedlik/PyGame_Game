@@ -199,14 +199,12 @@ def handle_movement(player1: Player, player2: Player, objects: dict[str, Tile|Pl
         player1.x_vel = 0
     if not player1.P_jump:
         player1.y_vel = 0 
-    player1.P_dismount = False
 
     s_collide_left, s_collide_right = collide(player2, objects, player2.current_vel * 2)
     if not player2.P_dash and not player2.P_knockback:
         player2.x_vel = 0
     if not player2.P_jump:
         player2.y_vel = 0
-    player2.P_dismount = False
 
 
     if not player1.hit and not player1.P_attack and not player1.P_dash:
