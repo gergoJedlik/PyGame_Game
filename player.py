@@ -15,10 +15,10 @@ class Player(pygame.sprite.Sprite):
 
         self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
         if name == 'Huntress':
-            self.hitbox: pygame.Rect = pygame.Rect(x+width+8, y+height-13, 53, height*0.7)
+            self.hitbox: pygame.Rect = pygame.Rect(x+width+8, y+height-12, 53, height*0.7)
             self.p1_hb_cord = self.hitbox.bottomleft
         else:
-            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75)+10, y+(height*0.7)-2, 53, height*0.6)
+            self.hitbox: pygame.Rect = pygame.Rect(x+(width*0.75)+10, y+(height*0.7)-3, 53, height*0.6)
             self.p1_hb_cord = self.hitbox.bottomleft 
 
         self.x_vel: int|float = 0
@@ -253,7 +253,7 @@ class Player(pygame.sprite.Sprite):
             self.attackbox.centerx = x
          
         if y:       
-            self.rect.bottom = y
+            self.rect.bottom = y+133
             self.hitbox.bottom = y
             self.attackbox.bottom = y
 
