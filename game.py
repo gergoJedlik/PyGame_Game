@@ -91,7 +91,7 @@ def main() -> None:
             
     pygame.quit()
 
-
+# UI Element Initialization Functions an Methods
 def get_menu() -> dict[str, Text|Img]:
     menu_dict: dict[str, Text] = {}
 

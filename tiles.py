@@ -74,16 +74,12 @@ class Level:
             for letter_index, letter in enumerate(line):
                 if letter == "x":
                     self.objects[f"tile_{line_index}_{letter_index}"] = Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT)
-                    #self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
                 if letter == "f":
                     self.objects[f"tile_{line_index}_{letter_index}"] = Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_WIDTH, sett.TILE_WIDTH * line_index), sett.TILE_WIDTH, sett.TILE_WIDTH, columb=True)
-                    #self.objects.append(Tile(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_WIDTH, sett.TILE_WIDTH * line_index), sett.TILE_WIDTH, sett.TILE_WIDTH, columb=True))
                 if letter == "p":
                     self.objects[f"platform_{line_index}_{letter_index}"] = Platform(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT)
-                    #self.objects.append(Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT))
                 if letter == "P":
                     self.objects[f"platform_{line_index}_{letter_index}"] = Platform(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True)
-                    #self.objects.append(Platfrom(letter_index * sett.TILE_WIDTH, min(sett.HEIGHT-sett.TILE_HEIGHT, sett.TILE_HEIGHT * line_index), sett.TILE_WIDTH, sett.TILE_HEIGHT, True))
 
     @property
     def get_objects(self) -> dict[str, Tile|Platform]:
