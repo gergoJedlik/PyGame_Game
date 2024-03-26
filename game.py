@@ -27,7 +27,6 @@ def main() -> None:
     menu_dict = get_menu()
 
 
-    blink = 0
     active: bool = False
     win: None|str = None
     running = True
@@ -93,7 +92,7 @@ def main() -> None:
 
 # UI Element Initialization Functions an Methods
 def get_menu() -> dict[str, Text|Img]:
-    menu_dict: dict[str, Text] = {}
+    menu_dict: dict[str, Text|Img] = {}
 
     background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
     menu_dict["background"] = background

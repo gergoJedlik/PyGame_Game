@@ -5,24 +5,24 @@ import os
 class Object(pygame.sprite.Sprite):
     def __init__(self, x: int, y: int, width: int, height: int, name: None|str =None) -> None:
         super().__init__()
-        self.rect = pygame.Rect(x, y, width, height)
-        self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        self.obj_rect: pygame.Rect = pygame.Rect(x, y, width, height)
+        self.texture: pygame.Surface = pygame.Surface((width, height), pygame.SRCALPHA)
         self.width = width
         self.height = height
         self.name = name
 
     def draw(self, screen: pygame.Surface):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+        screen.blit(self.texture, (self.obj_rect.x, self.obj_rect.y))
 
 class Tile(Object):
     def __init__(self, x: int, y: int, width: int, height: int, columb: bool = False) -> None:
         super().__init__(x, y, width, height)
         self.columb = columb
         block = self.get_block(width, height)
-        self.image.blit(block, (0, 0))
-        self.mask = pygame.mask.from_surface(self.image)
+        self.texture.blit(block, (0, 0))
+        self.mask = pygame.mask.from_surface(self.texture)
         self.collidebox = pygame.Rect(x, y, width, 64)
-        self.collidebox.bottomleft = self.rect.bottomleft
+        self.collidebox.bottomleft = self.obj_rect.bottomleft
         self.coordinates: tuple[int, int] = (x, y)
 
     def get_block(self, x: int, y: int):
@@ -52,9 +52,9 @@ class Platform(Object):
             block = self.get_block(width+60, height)
             self.collidebox = pygame.Rect(x, y, width+60, 32)
 
-        self.image.blit(block, (0, 0))
-        self.mask = pygame.mask.from_surface(self.image)
-        self.collidebox.topleft = (self.rect.topleft[0], self.rect.topleft[1]+64)
+        self.texture.blit(block, (0, 0))
+        self.mask = pygame.mask.from_surface(self.texture)
+        self.collidebox.topleft = (self.obj_rect.topleft[0], self.obj_rect.topleft[1]+64)
         self.coordinates: tuple[int, int] = (x, y)
 
     def get_block(self, x: int, y: int):
