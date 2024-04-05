@@ -37,7 +37,7 @@ def main() -> None:
                 if event.type == pygame.QUIT and (not player1.P_dead or not player2.P_dead):
                     running = False
                 if event.type == pygame.KEYDOWN and not win:
-                    if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
+                    if event.key == pygame.K_g and not player1.P_attack and not player1.dead:
                         player1.attack()
                     if event.key == pygame.K_RSHIFT and not player2.P_attack and not player2.dead:
                         player2.attack()
@@ -45,7 +45,7 @@ def main() -> None:
                         player1.jump()
                     if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1 and not player2.dead:
                         player2.jump()
-                    if event.key == pygame.K_LSHIFT and not player1.P_attack and player1.dash_cd == 0 and not player1.dead:
+                    if event.key == pygame.K_h and not player1.P_attack and player1.dash_cd == 0 and not player1.dead:
                         player1.dash()
                     if event.key == pygame.K_MINUS  and not player2.P_attack  and player2.dash_cd == 0 and not player2.dead:
                         player2.dash()
