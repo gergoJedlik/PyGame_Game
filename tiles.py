@@ -40,14 +40,14 @@ class Tile(Object):
             path = os.path.join("Assets", "Tileset", "dirt.png")
         else:
             path = os.path.join("Assets", "Tileset", "Tiles.png")
-
+        
         image = pygame.image.load(path).convert_alpha()
         surface = pygame.Surface((x, y), pygame.SRCALPHA)
-        if not self.literal:
-            rect = pygame.Rect(128, 0, x, y)
-        else:
+        if self.literal == "f":
             rect = pygame.Rect(224, 32, x, y)
-
+        else:
+            rect = pygame.Rect(128, 0, x, y)
+        
         surface.blit(image, (0, 0), rect)
         return pygame.transform.scale2x(surface)
 
