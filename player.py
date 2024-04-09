@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.GRAV = 1
         self.ANIMATION_DELAY = sett.ANIMATION_DELAY
 
-        self.rect: pygame.Rect = pygame.Rect(x, y, width, height)
+        self.player_rect: pygame.Rect = pygame.Rect(x, y, width, height)
         if name == 'Huntress':
             self.hitbox: pygame.Rect = pygame.Rect(x+width+8, y+height-12, 53, height*0.7)
             self.p1_hb_cord = self.hitbox.bottomleft
@@ -237,7 +237,7 @@ class Player(pygame.sprite.Sprite):
         self.update_mask()
 
     def update_mask(self):
-        self.rect = self.sprite.get_rect(topleft = (self.rect.x, self.rect.y))
+        self.player_rect = self.sprite.get_rect(topleft = (self.player_rect.x, self.player_rect.y))
         self.mask = pygame.mask.from_surface(self.sprite)
         
     def attack(self):
@@ -251,12 +251,12 @@ class Player(pygame.sprite.Sprite):
         
     def place(self, x: int|None, y: int|None):
         if x:
-            self.rect.centerx = x
+            self.player_rect.centerx = x
             self.hitbox.centerx = x
             self.attackbox.centerx = x
          
         if y:       
-            self.rect.bottom = y+133
+            self.player_rect.bottom = y+133
             self.hitbox.bottom = y
             self.attackbox.bottom = y
 
@@ -267,7 +267,7 @@ class Player(pygame.sprite.Sprite):
         self.y_vel *= -1
 
     def draw(self, window: pygame.Surface, offset_x: int = 0, offset_y: int = 0):
-        window.blit(self.sprite, (self.rect.x - offset_x, self.rect.y - offset_y))
+        window.blit(self.sprite, (self.player_rect.x - offset_x, self.player_rect.y - offset_y))
     
     def make_hit(self, damage: int):
         if self.hit_count == 0:
@@ -279,11 +279,11 @@ class Player(pygame.sprite.Sprite):
         if dx != 0 and not test:
             self.current_vel = dx
         if not self.dead:
-            self.rect.x += int(dx)
+            self.player_rect.x += int(dx)
             self.hitbox.x += int(dx)
             self.attackbox.x += int(dx)
             
-        self.rect.y += int(dy)
+        self.player_rect.y += int(dy)
         self.hitbox.y += int(dy)
         self.attackbox.y += int(dy)
 

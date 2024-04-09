@@ -8,6 +8,9 @@ from bredket import Bredket
 import os
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.set_volume(0.2)
+
 
 def main() -> None:
     screen = pygame.display.set_mode((sett.WIDHT, sett.HEIGHT))
@@ -26,19 +29,26 @@ def main() -> None:
     bg_dict = get_background()
     menu_dict = get_menu()
 
+    game_phase: str = "Menu"
+    prev_game_phase: str|None = None
 
-    blink = 0
     active: bool = False
     win: None|str = None
     running = True
     while running:
+        if prev_game_phase != game_phase:
+            load_music(game_phase, prev_game_phase)
 
         if active is True:
+            if game_phase == "Fight":
+                prev_game_phase = game_phase
+            game_phase = "Fight"
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT and (not player1.P_dead or not player2.P_dead):
                     running = False
                 if event.type == pygame.KEYDOWN and not win:
-                    if event.key == pygame.K_SPACE and not player1.P_attack and not player1.dead:
+                    if event.key == pygame.K_g and not player1.P_attack and not player1.dead:
                         player1.attack()
                     if event.key == pygame.K_RSHIFT and not player2.P_attack and not player2.dead:
                         player2.attack()
@@ -46,7 +56,7 @@ def main() -> None:
                         player1.jump()
                     if event.key == pygame.K_UP and not player2.P_attack and player2.jump_count < 1 and not player2.dead:
                         player2.jump()
-                    if event.key == pygame.K_LSHIFT and not player1.P_attack and player1.dash_cd == 0 and not player1.dead:
+                    if event.key == pygame.K_h and not player1.P_attack and player1.dash_cd == 0 and not player1.dead:
                         player1.dash()
                     if event.key == pygame.K_MINUS  and not player2.P_attack  and player2.dash_cd == 0 and not player2.dead:
                         player2.dash()
@@ -73,12 +83,16 @@ def main() -> None:
 
             clock.tick(sett.FPS)
         else:
+            if game_phase == "Menu":
+                prev_game_phase = game_phase
+            game_phase = "Menu"
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         active, win = new_game(player1, player2, win, secret)
+                        pygame.mixer.music.rewind()
 
             for key, value in menu_dict.items():
                 if key == 'press to play' and type(value) == Text:
@@ -93,7 +107,7 @@ def main() -> None:
 
 # UI Element Initialization Functions an Methods
 def get_menu() -> dict[str, Text|Img]:
-    menu_dict: dict[str, Text] = {}
+    menu_dict: dict[str, Text|Img] = {}
 
     background: Img = Img(sett.WIDHT//2, sett.HEIGHT//2, os.path.join("Assets", "Tileset", "Background_0.png"), (sett.WIDHT, sett.HEIGHT))
     menu_dict["background"] = background
@@ -275,3 +289,18 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
             
 
     pygame.display.update()
+
+def load_music(current_phase: str, prev_phase: str|None) -> None:
+    if prev_phase is None:
+        pygame.mixer.music.load(os.path.join('Assets', 'Sound', 'Music', 'GAME TITLE MUSIC.mp3'))
+        pygame.mixer.music.play(loops=-1, fade_ms=1000)
+        return
+    
+    if current_phase == "Fight":
+        pygame.mixer.music.unload()
+        pygame.mixer.music.load(os.path.join('Assets', 'Sound', 'Music', 'GAME FIGHT MUSIC.mp3'))
+        pygame.mixer.music.play(loops=-1)
+    elif current_phase == "Win":
+        pygame.mixer.music.unload()
+    
+
