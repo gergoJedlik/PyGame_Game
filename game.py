@@ -1,4 +1,4 @@
-import pygame
+import pygame 
 import settings as sett
 from player import Player
 from tiles import Tile, Level, Platform
