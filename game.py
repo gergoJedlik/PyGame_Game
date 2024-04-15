@@ -95,9 +95,9 @@ def main() -> None:
                         pygame.mixer.music.rewind()
 
             for key, value in menu_dict.items():
-                if key == 'press to play' and type(value) == Text:
+                if key == 'press to play' and isinstance(value, Text):
                     value.blink()
-                if key == 'press to play' and type(value) == Text:
+                if key == 'press to play' and isinstance(value, Text):
                     value.blink()
                 value.draw(screen)
 
@@ -258,7 +258,7 @@ def update(screen: pygame.Surface, bg_dict: dict[str, Img], player1: Player, pla
 
     # Healthbar Lenght Update
     for element in ui_elements.values():
-        if type(element) == Healthbar:
+        if isinstance(element, Healthbar):
             element.update_width()
 
     for obj in floor.values():

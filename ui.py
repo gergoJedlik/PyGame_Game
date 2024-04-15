@@ -52,7 +52,7 @@ class Text:
         screen.blit(self.text, self.textRect)
 
     def align(self, x: int|str, y: int|str, x_alignment_point: str|None = None, y_alignment_point: str|None = None) -> None:
-        if type(x) == str:
+        if isinstance(x, str):
             if x == "center":
                 self.textRect.centerx = sett.WIDHT//2
             elif x == "left":
@@ -67,7 +67,7 @@ class Text:
             elif x_alignment_point == "center":
                 self.textRect.centerx = int(x)
 
-        if type(y) == str:
+        if isinstance(y, str):
             if y == "center":
                 self.textRect.centery = sett.HEIGHT//2
             elif y == "top":
