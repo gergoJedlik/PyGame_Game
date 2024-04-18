@@ -13,5 +13,5 @@ LEVEL_MAP_STR: list[str] = [
     "        ",
     "  P P   ",
     "        ",
-    "xXfzfzXx"
+    "xXfzfzzz"
 ]
