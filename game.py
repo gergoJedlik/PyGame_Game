@@ -14,7 +14,7 @@ pygame.mixer.music.set_volume(0.2)
 
 def main() -> None:
     screen = pygame.display.set_mode((sett.WIDHT, sett.HEIGHT))
-    pygame.display.set_caption("Jatek")
+    pygame.display.set_caption("Blades of Destiny")
     clock = pygame.time.Clock()
     
     player1: Player = Player("Huntress", 30, sett.HEIGHT-400, 150, 150)
